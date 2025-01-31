@@ -3,6 +3,8 @@ import express from "express";
 import http from "http";
 import userRouter from "./user/router";
 import path from "path";
+import { errorHandler } from "./errorHandler";
+import roomRouter from "./rooms/router";
 
 
 const app = express();
@@ -16,7 +18,11 @@ app.use(express.urlencoded({ extended: true }));
 app.disable("x-powered-by");
 app.use(express.static("assets"));
 
-app.use("/user",userRouter)
+app.use("/user",userRouter);
+app.use("/room",roomRouter);
+
+app.use(errorHandler);
+
 
 
 export default httpServer;

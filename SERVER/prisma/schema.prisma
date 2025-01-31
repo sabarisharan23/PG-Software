@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,7 +6,21 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
- 
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum Room_Type {
+  SINGLE
+  DOUBLE
+  TRIPLE
+  QUADRIPLE
+  STANDARD
+  PREMIUM
+}
 
 model user {
   id        Int      @id @default(autoincrement())
@@ -16,6 +29,25 @@ model user {
   username  String   @unique
   email     String   @unique
   password  String
+  role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id                Int       @id @default(autoincrement())
+  roomNumber        Int       @unique
+  roomName          String
+  roomType          Room_Type @default(SINGLE)
+  floor             Int
+  blockName         String
+  rentPrice         Decimal
+  depositPrice      Decimal
+  roomSize          Float
+  availableStatus   Boolean   @default(true)
+  attachedBathrooms Boolean   @default(true)
+  balconyStatus     Boolean   @default(true)
+  cctvStatus        Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
