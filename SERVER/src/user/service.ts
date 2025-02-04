@@ -1,13 +1,10 @@
-import {
-  CreateUserDtoType,
-  GetUsersDtoType,
-  UpdateUserDtoType,
-} from "./user.dto";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { CreateUserDtoType, UpdateUserDtoType } from "./user.dto";
 
 const prisma = new PrismaClient();
 
+// Function to create a new user
 export async function createUser(parsedData: CreateUserDtoType) {
   try {
     const existingUser = await prisma.user.findUnique({
@@ -19,7 +16,10 @@ export async function createUser(parsedData: CreateUserDtoType) {
     if (existingUser) {
       throw new Error("User already exists");
     }
+
     const hashedPassword = await bcrypt.hash(parsedData.password, 10);
+
+    // Create new user
     const newUser = await prisma.user.create({
       data: {
         firstname: parsedData.firstname,
@@ -30,17 +30,27 @@ export async function createUser(parsedData: CreateUserDtoType) {
         role: parsedData.role,
       },
     });
+
+    // If role is TENANT and roomId is provided, create the RoomTenant mapping
+    if (parsedData.role === "TENANT" && parsedData.roomId) {
+      await prisma.roomTenant.create({
+        data: {
+          userId: newUser.id,
+          roomId: parsedData.roomId,
+        },
+      });
+    }
+
     return newUser;
   } catch (error) {
     throw new Error(
-      `Error creating user: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
+      `Error creating user: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }
 
-export async function getUsers(query: GetUsersDtoType) {
+// Function to get users (with optional filters)
+export async function getUsers(query: any) {
   try {
     const whereCondition: any = {
       id: query.id !== undefined ? query.id : undefined,
@@ -53,74 +63,74 @@ export async function getUsers(query: GetUsersDtoType) {
 
     const users = await prisma.user.findMany({
       where: whereCondition,
-      select: {
-        id: true,
-        firstname: true,
-        lastname: true,
-        username: true,
-        email: true,
-        role: true,
+      include: {
+        roomTenants: true, // Include room tenancy for TENANT users
+        managedPgs: true, // Include PGs managed by this user
+        ownedPgs: true, // Include PGs owned by this user
+      
       },
     });
-
-    console.log("Querying with:", whereCondition);
 
     return users;
   } catch (error) {
     throw new Error(
-      `Error fetching users: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
+      `Error fetching users: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }
 
+// Function to update a user's details
 export async function updateUser(id: number, parsedData: UpdateUserDtoType) {
   const existingUser = await prisma.user.findUnique({ where: { id } });
   if (!existingUser) {
     throw new Error("User not found");
   }
+
+  // Update user details
   const updateUser = await prisma.user.update({
     where: { id },
     data: parsedData,
-    select: {
-      id: true,
-      firstname: true,
-      lastname: true,
-      username: true,
-      email: true,
-      role: true,
-    },
   });
-  return {
-    id: updateUser.id,
-    firstname: updateUser.firstname,
-    lastname: updateUser.lastname,
-    username: updateUser.username,
-    email: updateUser.email,
-    role: updateUser.role,
-  };
+
+  // If the user is a tenant and roomId is provided, update their room assignment
+  if (parsedData.role === "TENANT" && parsedData.roomId) {
+    await prisma.roomTenant.upsert({
+      where: {
+        userId_roomId: { userId: id, roomId: parsedData.roomId },
+      },
+      update: {
+        roomId: parsedData.roomId,
+      },
+      create: {
+        userId: id,
+        roomId: parsedData.roomId,
+      },
+    });
+  }
+
+  return updateUser;
 }
 
+// Function to delete a user
 export async function deleteUser(id: number) {
   try {
-    if (!id || isNaN(id)) {
-      throw new Error("Invalid user ID");
-    }
-
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       throw new Error("User not found");
     }
 
+    // If it's a tenant, remove the room tenancy first
+    if (user.role === "TENANT") {
+      await prisma.roomTenant.deleteMany({ where: { userId: id } });
+    }
+
+    // Delete user
     await prisma.user.delete({ where: { id } });
 
     return { success: true, message: "User deleted successfully" };
   } catch (error) {
     throw new Error(
-      `Error deleting user: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
+      `Error deleting user: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }

@@ -1,5 +1,6 @@
 import express from "express";
-import { createUserController,deleteUserController,getUsersController, updateUserController } from "./controller";
+import { createUserController, deleteUserController, getUsersController, updateUserController } from "./controller";
+
 const userRouter = express.Router();
 
 userRouter.post("/createUser", createUserController);

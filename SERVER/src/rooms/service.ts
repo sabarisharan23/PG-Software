@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { CreateRoomDtoType, GetRoomsDtoType, UpdateRoomDtoType } from "./room.dto";
-
+import { CreateRoomDtoType, UpdateRoomDtoType } from "./room.dto";
 
 const prisma = new PrismaClient();
 
+// Function to create a new room
 export async function createRoom(parsedData: CreateRoomDtoType) {
   try {
     const existingRoom = await prisma.room.findUnique({
@@ -11,9 +11,11 @@ export async function createRoom(parsedData: CreateRoomDtoType) {
         roomNumber: parsedData.roomNumber,
       },
     });
+
     if (existingRoom) {
       throw new Error("Room already exists");
     }
+
     const newRoom = await prisma.room.create({
       data: {
         roomNumber: parsedData.roomNumber,
@@ -28,128 +30,73 @@ export async function createRoom(parsedData: CreateRoomDtoType) {
         attachedBathrooms: parsedData.attachedBathrooms,
         balconyStatus: parsedData.balconyStatus,
         cctvStatus: parsedData.cctvStatus,
+        pgId: parsedData.pgId,
       },
     });
+
     return newRoom;
   } catch (error) {
     throw new Error(
-      `Error creating room: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
+      `Error creating room: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }
 
-export async function getRooms(query: GetRoomsDtoType) {
+// Function to get rooms
+export async function getRooms(query: any) {
   try {
-    const roomId = query.id;
-    const whereCondition: any = {
-        id:roomId ? Number(roomId) : undefined,
+    const whereCondition = {
       roomNumber: query.roomNumber || undefined,
-      roomName: query.roomName || undefined,
-      roomType: query.roomType || undefined,
-      floor: query.floor || undefined,
-      blockName: query.blockName || undefined,
-      rentPrice: query.rentPrice || undefined,
-      depositPrice: query.depositPrice || undefined,
-      roomSize: query.roomSize || undefined,
-      availableStatus: query.availableStatus || undefined,
-      attachedBathrooms: query.attachedBathrooms || undefined,
-      balconyStatus: query.balconyStatus || undefined,
-      cctvStatus: query.cctvStatus || undefined,
+      pgId: query.pgId || undefined,
     };
 
     const rooms = await prisma.room.findMany({
       where: whereCondition,
-      select: { 
-        id: true,
-        roomNumber: true,
-        roomName: true,
-        roomType: true,
-        floor: true,
-        blockName: true,
-        rentPrice: true,
-        depositPrice: true,
-        roomSize: true,
-        availableStatus: true,
-        attachedBathrooms: true,
-        balconyStatus: true,
-        cctvStatus: true,
-      },
+      include:{
+        pg: true, // Include PG for TENANT rooms
+        roomTenants: true, // Include room tenancy for TENANT rooms
+      }
     });
-
-    console.log("Querying with:", whereCondition);
 
     return rooms;
   } catch (error) {
     throw new Error(
-      `Error fetching rooms: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
+      `Error fetching rooms: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }
 
+// Function to update room details
 export async function updateRoom(id: number, parsedData: UpdateRoomDtoType) {
   const existingRoom = await prisma.room.findUnique({ where: { id } });
   if (!existingRoom) {
     throw new Error("Room not found");
   }
+
+  // Update room details
   const updateRoom = await prisma.room.update({
     where: { id },
     data: parsedData,
-    select: {
-      id: true,
-      roomNumber: true,
-      roomName: true,
-      roomType: true,
-      floor: true,
-      blockName: true,
-      rentPrice: true,
-      depositPrice: true,
-      roomSize: true,
-      availableStatus: true,
-      attachedBathrooms: true,
-      balconyStatus: true,
-      cctvStatus: true,
-    },
   });
-  return {
-    id: updateRoom.id,
-    roomNumber: updateRoom.roomNumber,
-    roomName: updateRoom.roomName,
-    roomType: updateRoom.roomType,
-    floor: updateRoom.floor,
-    blockName: updateRoom.blockName,
-    rentPrice: updateRoom.rentPrice,
-    depositPrice: updateRoom.depositPrice,
-    roomSize: updateRoom.roomSize,
-    availableStatus: updateRoom.availableStatus,
-    attachedBathrooms: updateRoom.attachedBathrooms,
-    balconyStatus: updateRoom.balconyStatus,
-    cctvStatus: updateRoom.cctvStatus,
-  };
+
+  return updateRoom;
 }
 
+// Function to delete room
 export async function deleteRoom(id: number) {
   try {
-    if (!id || isNaN(id)) {
-      throw new Error("Invalid room ID");
-    }
-
     const room = await prisma.room.findUnique({ where: { id } });
     if (!room) {
       throw new Error("Room not found");
     }
 
+    // Delete room
     await prisma.room.delete({ where: { id } });
 
     return { success: true, message: "Room deleted successfully" };
   } catch (error) {
     throw new Error(
-      `Error deleting room: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
+      `Error deleting room: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }

@@ -6,6 +6,7 @@ import {
 } from "./user.dto";
 import { createUser, deleteUser, getUsers, updateUser } from "./service";
 
+// Controller to create a new user
 export async function createUserController(
   req: Request,
   res: Response,
@@ -20,6 +21,7 @@ export async function createUserController(
   }
 }
 
+// Controller to get users (with optional query params)
 export async function getUsersController(
   req: Request,
   res: Response,
@@ -30,6 +32,7 @@ export async function getUsersController(
   res.json(response);
 }
 
+// Controller to update user details
 export async function updateUserController(
   req: Request,
   res: Response,
@@ -44,6 +47,7 @@ export async function updateUserController(
   }
 }
 
+// Controller to delete a user
 export async function deleteUserController(
   req: Request,
   res: Response,
@@ -56,9 +60,7 @@ export async function deleteUserController(
     }
     const response = await deleteUser(userId);
     res.json(response);
-    res.json({ message: "User deleted successfully" });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 }

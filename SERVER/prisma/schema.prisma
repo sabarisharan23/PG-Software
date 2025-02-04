@@ -10,44 +10,96 @@ datasource db {
 enum Role {
   SUPER_ADMIN
   ADMIN
-  USER
+  TENANT
 }
 
 enum Room_Type {
   SINGLE
   DOUBLE
   TRIPLE
-  QUADRIPLE
+  QUADRUPLE
   STANDARD
   PREMIUM
 }
 
-model user {
+model User {
   id        Int      @id @default(autoincrement())
   firstname String?
   lastname  String?
   username  String   @unique
   email     String   @unique
   password  String
-  role      Role     @default(USER)
+  role      Role     @default(TENANT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relation: Super Admin owns PGs
+  ownedPgs   PG[]    @relation("OwnedPGs")
+
+  // Relation: Admins manage PGs
+  managedPgs PgAssignedAdmin[]
+
+  // Relation: Tenants assigned to rooms (Many-to-Many via RoomTenant)
+  roomTenants RoomTenant[]
+}
+
+model PG {
+  id          Int      @id @default(autoincrement())
+  pgName      String   @unique
+  location    String
+  ownedById   Int
+  ownedBy     User     @relation("OwnedPGs", fields: [ownedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // PGs have multiple Rooms
+  rooms       Room[]
+
+  // PGs have multiple assigned Admins (via PgAssignedAdmin)
+  assignedAdmins PgAssignedAdmin[]
 }
 
 model Room {
-  id                Int       @id @default(autoincrement())
-  roomNumber        Int       @unique
-  roomName          String
-  roomType          Room_Type @default(SINGLE)
-  floor             Int
-  blockName         String
-  rentPrice         Decimal
-  depositPrice      Decimal
-  roomSize          Float
-  availableStatus   Boolean   @default(true)
-  attachedBathrooms Boolean   @default(true)
-  balconyStatus     Boolean   @default(true)
-  cctvStatus        Boolean   @default(true)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id               Int       @id @default(autoincrement())
+  roomNumber       Int       @unique
+  roomName         String
+  roomType         Room_Type @default(SINGLE)
+  floor            Int
+  blockName        String
+  rentPrice        Decimal
+  depositPrice     Decimal
+  roomSize         Float
+  availableStatus  Boolean   @default(true)
+  attachedBathrooms Boolean  @default(true)
+  balconyStatus    Boolean   @default(true)
+  cctvStatus       Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Relation: Room belongs to PG
+  pgId             Int
+  pg               PG      @relation(fields: [pgId], references: [id])
+
+  // Relation: Many-to-Many with Tenants via RoomTenant
+  roomTenants      RoomTenant[]
+}
+
+model RoomTenant {
+  userId  Int
+  roomId  Int
+  user    User @relation(fields: [userId], references: [id])
+  room    Room @relation(fields: [roomId], references: [id])
+
+  @@id([userId, roomId])
+}
+
+model PgAssignedAdmin {
+  adminId  Int
+  pgId     Int
+  admin    User @relation(fields: [adminId], references: [id])
+  pg       PG   @relation(fields: [pgId], references: [id])
+
+  assignedAt DateTime @default(now())
+
+  @@id([adminId, pgId])
 }

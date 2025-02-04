@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
   CreateRoomDtoSchema,
   GetRoomsDtoSchema,
@@ -6,6 +6,7 @@ import {
 } from "./room.dto";
 import { createRoom, getRooms, updateRoom, deleteRoom } from "./service";
 
+// Controller to create a new room
 export async function createRoomController(
   req: Request,
   res: Response,
@@ -20,35 +21,33 @@ export async function createRoomController(
   }
 }
 
+// Controller to get rooms
 export async function getRoomsController(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  try {
-    const query = GetRoomsDtoSchema.parse(req.query);
-    const response = await getRooms(query);
-    res.json(response);
-  } catch (error) {
-    next(error);
-  }
+  const query = GetRoomsDtoSchema.parse(req.query);
+  const response = await getRooms(query);
+  res.json(response);
 }
 
+// Controller to update room details
 export async function updateRoomController(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const roomId = Number(req.params.id);
     const body = UpdateRoomDtoSchema.parse(req.body);
-    const response = await updateRoom(roomId, body);
+    const response = await updateRoom(Number(req.params.id), body);
     res.json(response);
   } catch (error) {
     next(error);
   }
 }
 
+// Controller to delete a room
 export async function deleteRoomController(
   req: Request,
   res: Response,
@@ -57,13 +56,11 @@ export async function deleteRoomController(
   try {
     const roomId = Number(req.params.id);
     if (!roomId || isNaN(roomId)) {
-      throw new Error("Invalid room ID");
+      throw new Error("Invalid Room ID");
     }
     const response = await deleteRoom(roomId);
     res.json(response);
-    res.json({ message: "Room deleted successfully" });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 }
