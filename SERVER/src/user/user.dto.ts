@@ -21,6 +21,7 @@ export const GetUsersDtoSchema = z.object({
   username: z.string().optional(),
   email: z.string().optional(),
   role: z.enum(["SUPER_ADMIN", "ADMIN", "TENANT"]).optional(),
+  roomId: z.string().optional(), // Only for TENANT users
 });
 
 export type GetUsersDtoType = z.infer<typeof GetUsersDtoSchema>;

@@ -4,8 +4,9 @@ import http from "http";
 import userRouter from "./user/router";
 import path from "path";
 import { errorHandler } from "./errorHandler";
-import roomRouter from "./rooms/router";
-import pgRouter from "./PG/router";
+import roomRouter from "./Services/rooms/router";
+import pgRouter from "./Services/PG/router";
+import roomTenantRouter from "./Services/RoomTenant/router";
 
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(express.static("assets"));
 app.use("/user",userRouter);
 app.use("/room",roomRouter);
 app.use("/PG",pgRouter);
+app.use("/roomTenant",roomTenantRouter);
 
 app.use(errorHandler);
 

@@ -40,7 +40,11 @@ export async function updateUserController(
 ) {
   try {
     const body = UpdateUserDtoSchema.parse(req.body);
-    const response = await updateUser(Number(req.params.id), body);
+    const userId = Number(req.params.id);
+    if (!userId || isNaN(userId)) {
+      throw new Error("Invalid user ID");
+    }
+    const response = await updateUser(userId, body);
     res.json(response);
   } catch (error) {
     next(error);

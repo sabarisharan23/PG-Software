@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { CreateUserDtoType, UpdateUserDtoType } from "./user.dto";
+import { CreateUserDtoType, UpdateUserDtoType,GetUsersDtoType } from "./user.dto";
 
 const prisma = new PrismaClient();
 
@@ -29,14 +29,6 @@ export async function createUser(parsedData: CreateUserDtoType) {
       },
     });
 
-    // if (parsedData.role === "TENANT" && parsedData.roomId) {
-    //   await prisma.roomTenant.create({
-    //     data: {
-    //       userId: newUser.id,
-    //       roomId: parsedData.roomId,
-    //     },
-    //   });
-    // }
 
     return newUser;
   } catch (error) {
@@ -48,7 +40,7 @@ export async function createUser(parsedData: CreateUserDtoType) {
   }
 }
 
-export async function getUsers(query: any) {
+export async function getUsers(query: GetUsersDtoType) {
   try {
     const whereCondition: any = {
       id: query.id !== undefined ? query.id : undefined,
@@ -88,21 +80,6 @@ export async function updateUser(id: number, parsedData: UpdateUserDtoType) {
     where: { id },
     data: parsedData,
   });
-
-  // if (parsedData.role === "TENANT" && parsedData.roomId) {
-  //   await prisma.roomTenant.upsert({
-  //     where: {
-  //       userId_roomId: { userId: id, roomId: parsedData.roomId },
-  //     },
-  //     update: {
-  //       roomId: parsedData.roomId,
-  //     },
-  //     create: {
-  //       userId: id,
-  //       roomId: parsedData.roomId,
-  //     },
-  //   });
-  // }
 
   return updateUser;
 }

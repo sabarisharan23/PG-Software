@@ -84,7 +84,8 @@ model RoomTenant {
   room   Room @relation(fields: [roomId], references: [id])
 
   @@id([userId, roomId])
-}
+  @@unique([userId]) 
+} 
 
 model PgAssignedAdmin {
   adminId    Int      @map("admin_id")

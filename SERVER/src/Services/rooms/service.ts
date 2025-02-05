@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { CreateRoomDtoType, UpdateRoomDtoType } from "./room.dto";
+import { CreateRoomDtoType, UpdateRoomDtoType,GetRoomsDtoType } from "./room.dto";
 
 const prisma = new PrismaClient();
 
@@ -49,11 +49,22 @@ export async function createRoom(parsedData: CreateRoomDtoType) {
   }
 }
 
-export async function getRooms(query: any) {
+export async function getRooms(query: GetRoomsDtoType) {
   try {
     const whereCondition = {
       roomNumber: query.roomNumber || undefined,
       pgId: query.pgId || undefined,
+      roomName:query.roomName || undefined,
+      roomType: query.roomType || undefined,
+      floor: query.floor || undefined,
+      blockName: query.blockName || undefined,
+      rentPrice: query.rentPrice || undefined,
+      depositPrice: query.depositPrice || undefined,
+      roomSize: query.roomSize || undefined,
+      availableStatus: query.availableStatus || undefined,
+      attachedBathrooms: query.attachedBathrooms || undefined,
+      balconyStatus: query.balconyStatus || undefined,
+      cctvStatus: query.cctvStatus || undefined,
     };
 
     const rooms = await prisma.room.findMany({
@@ -61,6 +72,7 @@ export async function getRooms(query: any) {
       include: {
         pg: true,
         roomTenants: true,
+        tenantRequest: true,
       },
     });
 
@@ -106,3 +118,4 @@ export async function deleteRoom(id: number) {
     );
   }
 }
+

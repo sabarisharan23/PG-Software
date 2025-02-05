@@ -22,7 +22,18 @@ export type CreateRoomDtoType = z.infer<typeof CreateRoomDtoSchema>;
 // Get Rooms DTO
 export const GetRoomsDtoSchema = z.object({
   roomNumber: z.number().optional(),
-  pgId: z.number().optional(),
+  pgId: z.string().transform((val) => (val ? parseInt(val, 10) : undefined)).optional(),
+  roomName: z.string().optional(),
+  roomType: z.enum(["SINGLE", "DOUBLE", "TRIPLE", "QUADRUPLE", "STANDARD", "PREMIUM"]).optional(),
+  floor: z.number().optional(),
+  blockName: z.string().optional(),
+  rentPrice: z.number().optional(),
+  depositPrice: z.number().optional(),
+  roomSize: z.number().optional(),
+  availableStatus: z.boolean().optional(),
+  attachedBathrooms: z.boolean().optional(),
+  balconyStatus: z.boolean().optional(),
+  cctvStatus: z.boolean().optional(),
 });
 
 export type GetRoomsDtoType = z.infer<typeof GetRoomsDtoSchema>;
