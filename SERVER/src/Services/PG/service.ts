@@ -59,6 +59,7 @@ export async function getPGs(query: any, userRole: string) {
         ownedBy: true,
         assignedAdmins: true,
         rooms: true,
+        
       },
     });
 

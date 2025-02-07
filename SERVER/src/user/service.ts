@@ -38,7 +38,7 @@ export async function createUser(parsedData: CreateUserDtoType) {
       }`
     );
   }
-}
+} 
 
 export async function getUsers(query: GetUsersDtoType) {
   try {

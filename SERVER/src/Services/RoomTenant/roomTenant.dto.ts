@@ -6,8 +6,7 @@ const BaseRoomTenantSchema = z.object({
   roomId: z.number(),
 });
 
-export const CreateRoomTenantDtoType = BaseRoomTenantSchema.extend({
-});
+export const CreateRoomTenantDtoType = BaseRoomTenantSchema;
 export type CreateRoomTenantDtoType = z.infer<typeof CreateRoomTenantDtoType>;
 
 

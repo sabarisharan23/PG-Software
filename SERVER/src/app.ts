@@ -4,9 +4,11 @@ import http from "http";
 import userRouter from "./user/router";
 import path from "path";
 import { errorHandler } from "./errorHandler";
-import roomRouter from "./Services/rooms/router";
+import roomRouter from "./Services/Rooms/router";
 import pgRouter from "./Services/PG/router";
 import roomTenantRouter from "./Services/RoomTenant/router";
+import adminAssignmentRouter from "./Services/pgAdminAssignment/router";
+import requestRouter from "./Services/TenantRequest/router";
 
 
 const app = express();
@@ -24,6 +26,8 @@ app.use("/user",userRouter);
 app.use("/room",roomRouter);
 app.use("/PG",pgRouter);
 app.use("/roomTenant",roomTenantRouter);
+app.use("/adminAssignment",adminAssignmentRouter);
+app.use("/request",requestRouter);
 
 app.use(errorHandler);
 
