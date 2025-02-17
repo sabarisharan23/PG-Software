@@ -1,8 +1,31 @@
+import { RouterProvider } from "react-router-dom";
+import { router } from "./AppRouter";
+import React, { useState, useEffect } from "react";
+// import Preloader from "../src/preLoader"; // Assuming Preloader is in components folder
+
+
 function App() {
+  // const [isLoading, setIsLoading] = useState<boolean>(true);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 3000); 
+  //   return () => clearTimeout(timer);
+  // }, []);
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center">
+  //       <Preloader />
+  //     </div> 
+  //   );
+  // }
+
   return (
-    <div className='bg-blue-500 p-20 flex flex-col items-center justify-center'>
-      Hello There.
+    <div className="font-serif">
+      <RouterProvider router={router} />
     </div>
-  )
+  );
 }
-export default App
+
+export default App;
