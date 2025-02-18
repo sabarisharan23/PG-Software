@@ -1,6 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./AppRouter";
 import React, { useState, useEffect } from "react";
+import { Toaster } from "./components/ui/sonner";
 // import Preloader from "../src/preLoader"; // Assuming Preloader is in components folder
 
 
