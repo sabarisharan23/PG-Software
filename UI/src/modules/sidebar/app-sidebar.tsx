@@ -3,15 +3,17 @@
 import * as React from "react"
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
+  LayoutDashboard,
+  User2Icon,
+  LucideHome,
+  LucideHotel,
+   LucideGitPullRequest,
+
 } from "lucide-react"
 
 import {
@@ -24,7 +26,6 @@ import {
 import { TeamSwitcher } from "./team-switcher"
 import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
-import { NavUser } from "./nav-user"
 
 // This is sample data.
 const data = {
@@ -52,90 +53,82 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Dashboard",
       url: "#",
-      icon: SquareTerminal,
-      isActive: true,
+      icon: LayoutDashboard,
+      
+    },
+    {
+      title: "User Management",
+      url: "#",
+      icon: User2Icon,
       items: [
         {
-          title: "History",
+          title: "Add User",
           url: "#",
         },
         {
-          title: "Starred",
+          title: "Update User",
           url: "#",
         },
         {
-          title: "Settings",
+          title: "Delete User",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "PG Management",
       url: "#",
-      icon: Bot,
+      icon: LucideHotel,
       items: [
         {
-          title: "Genesis",
+          title: "Add PG's",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Update PG's",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "Delete PG's",
           url: "#",
         },
+       
       ],
     },
     {
-      title: "Documentation",
+      title: "Room Management",
       url: "#",
-      icon: BookOpen,
+      icon: LucideHome,
       items: [
         {
-          title: "Introduction",
+          title: "Add Rooms",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "Update Rooms",
           url: "#",
         },
         {
-          title: "Tutorials",
+          title: "Delete Rooms",
           url: "#",
         },
-        {
-          title: "Changelog",
-          url: "#",
-        },
+       
       ],
     },
     {
-      title: "Settings",
+      title: "Tenant Requests",
       url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
+      icon: LucideGitPullRequest,
+      
     },
+    {
+      title: "Admin Managements",
+      url: "#",
+      
+    },
+   
   ],
   projects: [
     {
@@ -167,7 +160,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {/* <NavUser user={data.user} /> */}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
