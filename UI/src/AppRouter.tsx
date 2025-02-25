@@ -1,7 +1,7 @@
 import { Outlet, createBrowserRouter } from "react-router-dom";
 import RootLayout from "./RootLayout";
 import LoginPage from "./LoginPage";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/dashboard/Dashboard";
 // import RootLayout from "./RootLayout";
 
 
