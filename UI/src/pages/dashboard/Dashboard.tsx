@@ -50,7 +50,7 @@ export default function Dashboard() {
               <NavUser user={data.user} />
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-[#f8f9fb]">
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-[#f0f1f6]">
             <DashboardFn />
           </div>
         </SidebarInset>

@@ -13,6 +13,17 @@ import {
   BellIcon,
   CalendarCheckIcon,
 } from "lucide-react";
+import Table, { Column } from "../../modules/table/Table";
+import { useState, useEffect } from "react";
+import TableContainer from "../../modules/table/Table";
+
+
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
 
 export default function SuperAdminDashboard() {
   const cardData = [
@@ -24,7 +35,7 @@ export default function SuperAdminDashboard() {
       icon: Building2Icon,
       content: "150",
       footer: "Active: 140 | Pending: 10",
-      router:"/pg-listings",
+      router: "/pg-listings",
     },
     {
       title: "Total Users",
@@ -34,7 +45,7 @@ export default function SuperAdminDashboard() {
       icon: UsersIcon,
       content: "5000",
       footer: "Admins: 50 | Owners: 200 | Tenants: 4750",
-      router:"/users",
+      router: "/users",
     },
     {
       title: "Available Rooms",
@@ -44,7 +55,7 @@ export default function SuperAdminDashboard() {
       icon: HomeIcon,
       content: "1200",
       footer: "Vacant: 300 | Occupied: 900",
-      router:"/rooms",
+      router: "/rooms",
     },
     {
       title: "Recent Bookings & Requests",
@@ -54,7 +65,7 @@ export default function SuperAdminDashboard() {
       icon: CalendarCheckIcon,
       content: "250",
       footer: "Pending: 50 | Confirmed: 180 | Cancelled: 20",
-      router:"/bookings",
+      router: "/bookings",
     },
     {
       title: "Alerts & Notifications",
@@ -64,8 +75,24 @@ export default function SuperAdminDashboard() {
       icon: BellIcon,
       content: "35",
       footer: "New: 10 | Complaints: 15 | Updates: 10",
-      router:"/notifications",
+      router: "/notifications",
     },
+  ];
+  const columns: Column<User>[] = [
+    { header: "id", accessor: "id" },
+    { header: "Name", accessor: "name" },
+    { header: "Email", accessor: "email" },
+  ];
+  
+  const data: User[] = [
+    { id: 1, name: "Alice", email: "alice@example.com" },
+    { id: 2, name: "Bob", email: "bob@example.com" },
+    { id: 3, name: "Charlie", email: "charlie@example.com" },
+    { id: 3, name: "Charlie", email: "charlie@example.com" },
+    { id: 3, name: "Charlie", email: "charlie@example.com" },
+    { id: 3, name: "Charlie", email: "charlie@example.com" },
+    { id: 3, name: "Charlie", email: "charlie@example.com" },
+    { id: 3, name: "Charlie", email: "charlie@example.com" },
   ];
 
   return (
@@ -75,7 +102,7 @@ export default function SuperAdminDashboard() {
           <Card
             key={index}
             className={`w-96 border cursor-pointer border-t-4 ${item.borderColor}`}
-            onClick={()=>(item.router)}
+            onClick={() => item.router}
           >
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -97,7 +124,9 @@ export default function SuperAdminDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className=" flex justify-center items-end text-3xl font-bold">{item.content}</div>
+              <div className=" flex justify-center items-end text-3xl font-bold">
+                {item.content}
+              </div>
             </CardContent>
             <CardFooter className="flex justify-center items-center gap-2">
               <p className="text-gray-500">{item.footer}</p>
@@ -105,7 +134,9 @@ export default function SuperAdminDashboard() {
           </Card>
         ))}
       </div>
-      <div className="text-lg font-bold ">5000</div>
+      <div className="pt-5">
+      <TableContainer title="User List" columns={columns} data={data} pageSizeOptions={[5, 10, 15]} />
+      </div>{" "}
     </div>
   );
 }
