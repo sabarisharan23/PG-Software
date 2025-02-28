@@ -13,11 +13,10 @@ import {
   BellIcon,
   CalendarCheckIcon,
 } from "lucide-react";
-import Table, { Column } from "../../modules/table/Table";
-import { useState, useEffect } from "react";
+import { Column } from "../../modules/table/Table";
 import TableContainer from "../../modules/table/Table";
-
-
+import { ProfileForm } from "../../modules/Form";
+import ApexChart from "../../modules/ApexChart";
 
 interface User {
   id: number;
@@ -83,7 +82,7 @@ export default function SuperAdminDashboard() {
     { header: "Name", accessor: "name" },
     { header: "Email", accessor: "email" },
   ];
-  
+
   const data: User[] = [
     { id: 1, name: "Alice", email: "alice@example.com" },
     { id: 2, name: "Bob", email: "bob@example.com" },
@@ -101,10 +100,10 @@ export default function SuperAdminDashboard() {
         {cardData.map((item, index) => (
           <Card
             key={index}
-            className={`w-96 border cursor-pointer border-t-4 ${item.borderColor}`}
+            className={`w-96 border cursor-pointer text-sm border-t-4 ${item.borderColor}`}
             onClick={() => item.router}
           >
-            <CardHeader>
+            <CardHeader className="text-sm">
               <div className="flex items-center gap-3">
                 <CardTitle className="">
                   <div className="flex items-center gap-5">
@@ -115,7 +114,7 @@ export default function SuperAdminDashboard() {
                     </div>
                     <div className="flex flex-col gap-2.5">
                       {item.title}
-                      <CardDescription className="p-0">
+                      <CardDescription className="p-0 text-xs">
                         {item.description}
                       </CardDescription>
                     </div>
@@ -124,7 +123,7 @@ export default function SuperAdminDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className=" flex justify-center items-end text-3xl font-bold">
+              <div className=" flex justify-center items-end text-2xl font-bold">
                 {item.content}
               </div>
             </CardContent>
@@ -135,7 +134,18 @@ export default function SuperAdminDashboard() {
         ))}
       </div>
       <div className="pt-5">
-      <TableContainer title="User List" columns={columns} data={data} pageSizeOptions={[5, 10, 15]} />
+        <TableContainer
+          title="User List"
+          columns={columns}
+          data={data}
+          pageSizeOptions={[5, 10, 15]}
+        />
+      </div>{" "}
+      <div className="pt-5">
+        <ProfileForm />{" "}
+      </div>{" "}
+      <div className="pt-5">
+        <ApexChart />{" "}
       </div>{" "}
     </div>
   );
