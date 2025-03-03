@@ -22,7 +22,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
           placeholder="Search..."
           className="border rounded px-3 py-1 text-sm"
         />
-        <Button variant={"default"}>Filter</Button>
+        {/* <Button variant={"outline"}>Filter</Button> */}
       </div>
     </div>
   );

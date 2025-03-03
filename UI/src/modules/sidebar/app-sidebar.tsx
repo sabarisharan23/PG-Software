@@ -37,7 +37,7 @@ const data = {
     items: [
       {
         title: "Dashboard",
-        url: "#",
+        url: "/dashboard",
         icon: LayoutDashboard,
         isActive: true, // Example: Active menu item
       },
@@ -46,17 +46,15 @@ const data = {
   navGroups: [
     {
       label: "Management",
-      items: [
+    items: [
         {
           title: "User Management",
           url: "#",
           icon: User2Icon,
           isActive: false,
           items: [
-            { title: "User List", url: "#" },
-            { title: "Add User", url: "#" },
-            { title: "Update User", url: "#" },
-            { title: "Delete User", url: "#" },
+            { title: "Config User", url: "/user-list" },
+          
           ],
         },
         {

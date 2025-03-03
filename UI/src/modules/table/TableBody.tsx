@@ -12,8 +12,10 @@ const TableContent = <T,>({ data, columns }: TableContentProps<T>) => {
         data.map((row, rowIndex) => (
           <tr key={rowIndex} className="hover:bg-gray-100 ">
             {columns.map((col, colIndex) => (
-              <td key={colIndex} className="p-2 px-6 py-4 text-gray-600 border-t border-b border-[#f0f1f4]">{String(row[col.accessor] ?? "")}</td>
-            ))}
+          <td key={colIndex} className="p-2 px-6 py-4 text-gray-600 border-t border-b border-[#f0f1f4]">
+            {col.render ? col.render(row) : String(row[col.accessor as keyof T] ?? "")}
+          </td>
+        ))}
           </tr>
         ))
       ) : (

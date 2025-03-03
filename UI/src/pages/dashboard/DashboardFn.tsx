@@ -17,6 +17,7 @@ import { Column } from "../../modules/table/Table";
 import TableContainer from "../../modules/table/Table";
 import { ProfileForm } from "../../modules/Form";
 import ApexChart from "../../modules/ApexChart";
+import { Button } from "../../components/ui/button";
 
 interface User {
   id: number;
@@ -78,10 +79,27 @@ export default function SuperAdminDashboard() {
     },
   ];
   const columns: Column<User>[] = [
-    { header: "id", accessor: "id" },
+    { header: "ID", accessor: "id" },
     { header: "Name", accessor: "name" },
     { header: "Email", accessor: "email" },
+    {
+      header: "Actions",
+      render: (row) => (
+        <div className="flex gap-2">
+          <Button variant={"link"} onClick={() =>console.log("clicked")} >
+            Edit
+          </Button >
+          <Button  variant={"link"} onClick={() =>console.log("clicked")}>
+            Delete
+          </Button >
+          <Button variant={"link"}  onClick={() =>console.log("clicked") }>
+            View
+          </Button >
+        </div>
+      ),
+    },
   ];
+  
 
   const data: User[] = [
     { id: 1, name: "Alice", email: "alice@example.com" },

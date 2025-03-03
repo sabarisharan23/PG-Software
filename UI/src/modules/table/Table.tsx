@@ -6,8 +6,10 @@ import TableContent from "./TableBody";
 
 export interface Column<T> {
   header: string;
-  accessor: keyof T;
+  accessor?: keyof T;
+  render?: (row: T) => JSX.Element;
 }
+
 
 interface TableProps<T> {
   title: string;
@@ -23,7 +25,7 @@ const TableContainer = <T,>({ title, columns, data, pageSizeOptions }: TableProp
 
   const filteredData = data.filter(row =>
     columns.some(col => 
-      String(row[col.accessor] ?? "").toLowerCase().includes(search.toLowerCase())
+      col.accessor && String(row[col.accessor] ?? "").toLowerCase().includes(search.toLowerCase())
     )
   );
 
