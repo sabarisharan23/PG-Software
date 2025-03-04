@@ -33,6 +33,11 @@ export const router = createBrowserRouter([
             element: <AddUser />,
             handle: { title: "Home" },
           },
+          {
+            path: "/add-user/:id",
+            element: <AddUser />,
+            handle: { title: "Home" },
+          },
         ],
       },
     ]);

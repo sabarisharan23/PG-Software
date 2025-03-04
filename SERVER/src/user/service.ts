@@ -70,6 +70,28 @@ export async function getUsers(query: GetUsersDtoType) {
   }
 }
 
+
+export async function getUserById(id: number) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        roomTenants: true,
+        managedPgs: true,
+        ownedPgs: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return user;
+  } catch (error) {
+    throw new Error(`Error fetching user: ${error instanceof Error ? error.message : "Unknown error"}`);
+  }
+}
+
 export async function updateUser(id: number, parsedData: UpdateUserDtoType) {
   const existingUser = await prisma.user.findUnique({ where: { id } });
   if (!existingUser) {

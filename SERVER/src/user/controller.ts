@@ -4,7 +4,7 @@ import {
   GetUsersDtoSchema,
   UpdateUserDtoSchema,
 } from "./user.dto";
-import { createUser, deleteUser, getUsers, updateUser } from "./service";
+import { createUser, deleteUser, getUserById, getUsers, updateUser } from "./service";
 
 // Controller to create a new user
 export async function createUserController(
@@ -30,6 +30,23 @@ export async function getUsersController(
   const query = GetUsersDtoSchema.parse(req.query);
   const response = await getUsers(query);
   res.json(response);
+}
+
+export async function getUserByIdController(  
+  req: Request,  
+  res: Response,  
+  next: NextFunction  
+) {  
+  try {  
+    const userId = Number(req.params.id);  
+    if (!userId || isNaN(userId)) {  
+      throw new Error("Invalid user ID");  
+    }  
+    const response = await getUserById(userId);  
+    res.json(response);  
+  } catch (error) {  
+    next(error);  
+  }  
 }
 
 // Controller to update user details

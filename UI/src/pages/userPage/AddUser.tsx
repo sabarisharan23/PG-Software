@@ -9,7 +9,6 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription,
 } from "../../components/ui/form";
 import { Input } from "../../components/ui/input";
 import {
@@ -19,8 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../AxiosInstence";
+import { toast } from "sonner";
+import { useParams } from "react-router-dom";
 
-// Define the validation schema using Zod
+// Define validation schema using Zod
 const formSchema = z
   .object({
     firstname: z.string().optional(),
@@ -31,7 +34,8 @@ const formSchema = z
     email: z.string().email({ message: "Invalid email address." }),
     password: z
       .string()
-      .min(6, { message: "Password must be at least 6 characters." }),
+      .min(6, { message: "Password must be at least 6 characters." })
+      .optional(),
     role: z.enum(["SUPER_ADMIN", "ADMIN", "TENANT"], {
       required_error: "Role is required.",
     }),
@@ -50,10 +54,13 @@ const formSchema = z
     }
   );
 
-// Infer the form data type from the schema
 type FormData = z.infer<typeof formSchema>;
 
 export default function AddUser() {
+  const { id } = useParams(); // Get user ID from URL params
+  const isEditMode = Boolean(id);
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,27 +69,71 @@ export default function AddUser() {
       username: "",
       email: "",
       password: "",
-      role: "ADMIN", // Default role
+      role: "ADMIN",
       roomId: undefined,
     },
   });
 
+  const { setValue } = form;
   const role = form.watch("role");
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data);
+  useEffect(() => {
+    if (isEditMode && id) {
+      const fetchUser = async () => {
+        try {
+          const response = await axiosInstance.get(`/user/getUser/${id}`);
+          const userData = response.data;
+
+          // Populate form with fetched data
+          setValue("firstname", userData.firstname || "");
+          setValue("lastname", userData.lastname || "");
+          setValue("username", userData.username || "");
+          setValue("email", userData.email || "");
+          setValue("role", userData.role || "ADMIN");
+          setValue("roomId", userData.roomId || undefined);
+        } catch (error) {
+          console.error("Error fetching user:", error);
+          toast.error("Failed to fetch user details.");
+        }
+      };
+
+      fetchUser();
+    }
+  }, [isEditMode, id, setValue]);
+
+  const onSubmit = async (data: FormData) => {
+    if (!id) {
+      toast.error("User ID is missing!");
+      return;
+    }
+    console.log("Submitting updated user:", { id, ...data });
+  
+    try {
+      setLoading(true);
+      const response = await axiosInstance.put(`/user/updateUser/${id}`, { id, ...data });
+      console.log("User updated:", response.data);
+      toast.success("User updated successfully!");
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Error updating user!");
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
     <>
       <div>
-        <h2 className="text-2xl font-semibold p-6 ">Add User</h2>
+        <h2 className="text-2xl font-semibold p-6">
+          {isEditMode ? "Edit User" : "Add User"}
+        </h2>
       </div>
       <div className="flex justify-center items-center p-6 bg-gray-100">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="p-10 shadow-lg rounded-lg w-full flex flex-col "
+            className="bg-white p-10 shadow-lg rounded-lg w-full flex flex-col"
           >
             {/* Form Fields Wrapper */}
             <div className="flex gap-10">
@@ -95,14 +146,9 @@ export default function AddUser() {
                     <FormItem>
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter your first name"
-                          className="w-full"
-                          {...field}
-                          
-                        />
+                        <Input placeholder="Enter your first name" {...field} />
                       </FormControl>
-                      <FormMessage className="text-red-500" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -113,35 +159,25 @@ export default function AddUser() {
                     <FormItem>
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter your last name"
-                          className="w-full"
-                          {...field}
-                        />
+                        <Input placeholder="Enter your last name" {...field} />
                       </FormControl>
-                      <FormMessage className="text-red-500" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
-                <div className="text-black">
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem className="text-black">
-                        <FormLabel className="text-black">Username</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your username"
-                            className="w-full"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-500" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               {/* Right Column */}
@@ -156,32 +192,32 @@ export default function AddUser() {
                         <Input
                           type="email"
                           placeholder="Enter your email"
-                          className="w-full"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage className="text-red-500" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-black">Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Enter your password"
-                          className="w-full"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-500" />
-                    </FormItem>
-                  )}
-                />
+                {!isEditMode && (
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Enter your password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <FormField
                   control={form.control}
                   name="role"
@@ -199,13 +235,12 @@ export default function AddUser() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="SUPER_ADMIN">
-                            SUPER ADMIN
+                            Super Admin
                           </SelectItem>
                           <SelectItem value="ADMIN">Admin</SelectItem>
-                          <SelectItem value="USER">User</SelectItem>
+                          <SelectItem value="TENANT">Tenant</SelectItem>
                         </SelectContent>
                       </Select>
-
                       <FormMessage />
                     </FormItem>
                   )}
@@ -226,11 +261,10 @@ export default function AddUser() {
                         <Input
                           type="number"
                           placeholder="Enter Room ID"
-                          className="w-full"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage className="text-red-500" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -239,8 +273,8 @@ export default function AddUser() {
 
             {/* Submit Button */}
             <div className="flex justify-end mt-6">
-              <Button type="submit" variant={"default"}>
-                Submit
+              <Button type="submit" disabled={loading}>
+                {loading ? "Submitting..." : isEditMode ? "Update" : "Submit"}
               </Button>
             </div>
           </form>
