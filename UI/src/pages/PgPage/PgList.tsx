@@ -13,72 +13,74 @@ import {
   DialogContent,
 } from "../../components/ui/dialog";
 
-// Define the expected shape of a user
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  role: string;
-}
-
-export default function UserList() {
+// Define the expected shape of a pg
+export interface Pg {
+    id: number;       
+    pgName: string;   
+    location: string; 
+    ownedById: number;
+    ownedBy: string;
+    username: string;
+  }
+  
+export default function PgList() {
   const navigate = useNavigate();
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<Pg[]>([]);
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedPg, setSelectedPg] = useState<Pg | null>(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchPgs = async () => {
       try {
-        const response = await axiosInstance.get<User[]>("/user/getUser"); // Ensure API response is typed
+        const response = await axiosInstance.get<Pg[]>("/PG/getPG"); // Ensure API response is typed
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    fetchUsers();
+    fetchPgs();
   }, []);
 
-  const handleDeleteUser = async () => {
-    if (!selectedUser) return;
+  const handleDeletePg = async () => {
+    if (!selectedPg) return;
 
     try {
-      await axiosInstance.delete(`/user/deleteUser/${selectedUser.id}`);
-      toast.success("User deleted successfully.");
+      await axiosInstance.delete(`/PG/deletePG/${selectedPg.id}`);
+      toast.success("Pg deleted successfully.");
 
-      // Update the user list after deletion
-      setData((prevData) => prevData.filter((user) => user.id !== selectedUser.id));
+      // Update the Pg list after deletion
+      setData((prevData) => prevData.filter((Pg) => Pg.id !== selectedPg.id));
 
       // Close the dialog
       setOpen(false);
-      setSelectedUser(null);
+      setSelectedPg(null);
     } catch (error: any) {
-      console.error("Error deleting user:", error.response?.data || error);
-      toast.error(error.response?.data?.message || "Failed to delete user.");
+      console.error("Error deleting pg:", error.response?.data || error);
+      toast.error(error.response?.data?.message || "Failed to delete pg.");
     }
   };
 
-  const columns: Column<User>[] = [
+  const columns: Column<Pg>[] = [
     { header: "ID", accessor: "id" },
-    { header: "Name", accessor: "username" },
-    { header: "Email", accessor: "email" },
-    { header: "Role", accessor: "role" },
+    { header: "PG Name", accessor: "pgName" },
+    { header: "Location", accessor: "location" },
+    { header: "Owner ID",  render: (row) => row.ownedBy.username },
     {
       header: "Actions",
-      render: (row: User) => (
+      render: (row: Pg) => (
         <div className="flex gap-8">
-          {/* Edit User */}
+          {/* Edit Pg */}
           <CiEdit
             className="text-black font-bold text-2xl cursor-pointer"
-            onClick={() => navigate(`/add-user/${row.id}`)}
+            onClick={() => navigate(`/add-pg/${row.id}`)}
           />
 
-          {/* Delete User Dialog Trigger */}
+          {/* Delete Pg Dialog Trigger */}
           <CiEraser
             className="text-black text-2xl cursor-pointer"
             onClick={() => {
-              setSelectedUser(row);
+              setSelectedPg(row);
               setOpen(true);
             }}
           />
@@ -90,19 +92,19 @@ export default function UserList() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex flex-row justify-between items-center">
-        <h1 className="text-2xl font-bold">User List</h1>
+        <h1 className="text-2xl font-bold">Pg List</h1>
         <Button
           className="cursor-pointer"
-          onClick={() => navigate("/add-user")}
+          onClick={() => navigate("/add-pg")}
           variant="default"
         >
-          Add User
+          Add Pg
         </Button>
       </div>
 
       <div className="pt-2">
         <TableContainer
-          title="List of Users"
+          title="List of Pgs"
           columns={columns}
           data={data}
           pageSizeOptions={[5, 10, 15]}
@@ -112,19 +114,19 @@ export default function UserList() {
       {/* Delete Confirmation Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader>Delete User</DialogHeader>
+          <DialogHeader>Delete Pg</DialogHeader>
           <DialogDescription className="text-md">
-            {selectedUser ? (
+            {selectedPg ? (
               <>
                 Are you sure you want to delete{" "}
-                <span className="font-semibold">{selectedUser.username}</span>?
+                <span className="font-semibold">{selectedPg.pgName}</span>?
               </>
             ) : (
-              "User not selected."
+              "Pg not selected."
             )}
           </DialogDescription>
           <DialogFooter className="flex gap-4 justify-end">
-            <Button onClick={handleDeleteUser} variant="destructive" disabled={!selectedUser}>
+            <Button onClick={handleDeletePg} variant="destructive" disabled={!selectedPg}>
               Delete
             </Button>
             <Button onClick={() => setOpen(false)}>Cancel</Button>

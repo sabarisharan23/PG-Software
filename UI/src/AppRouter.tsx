@@ -5,6 +5,8 @@ import LoginPage from "./LoginPage";
 import UserList from "./pages/userPage/UserList";
 import DashboardFn from "./pages/dashboard/DashboardFn";
 import AddUser from "./pages/userPage/AddUser";
+import PgList from "./pages/PgPage/PgList";
+import AddPg from "./pages/PgPage/addPg";
 // import RootLayout from "./RootLayout";
 
 
@@ -36,6 +38,21 @@ export const router = createBrowserRouter([
           {
             path: "/add-user/:id",
             element: <AddUser />,
+            handle: { title: "Home" },
+          },
+          {
+            path: "/pg-list",
+            element: <PgList />,
+            handle: { title: "Home" },
+          },
+          {
+            path: "/add-pg",
+            element: <AddPg />,
+            handle: { title: "Home" },
+          },
+          {
+            path: "/add-pg/:id",
+            element: <AddPg />,
             handle: { title: "Home" },
           },
         ],

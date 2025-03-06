@@ -53,7 +53,7 @@ const data = {
           icon: User2Icon,
           isActive: false,
           items: [
-            { title: "Config User", url: "/user-list" },
+            { title: "User List", url: "/user-list" },
           
           ],
         },
@@ -63,10 +63,8 @@ const data = {
           icon: LucideHotel,
           isActive: false,
           items: [
-            { title: "PG List", url: "#" },
-            { title: "Add PG's", url: "#" },
-            { title: "Update PG's", url: "#" },
-            { title: "Delete PG's", url: "#" },
+            { title: "PG List", url: "/pg-list" },
+            
           ],
         },
         {
@@ -76,9 +74,7 @@ const data = {
           isActive: false,
           items: [
             { title: "Room List", url: "#" },
-            { title: "Add Rooms", url: "#" },
-            { title: "Update Rooms", url: "#" },
-            { title: "Delete Rooms", url: "#" },
+            
           ],
         },
       ],

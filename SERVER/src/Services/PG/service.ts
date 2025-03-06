@@ -71,6 +71,31 @@ export async function getPGs(query: any, userRole: string) {
   }
 }
 
+export async function getPGById(id: number, userRole: string) {
+  try {
+  
+    if (!isSuperAdmin(userRole)) {
+      throw new Error("You do not have permission to view PG details.");
+    }
+    const pg = await prisma.pG.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        ownedBy: true,
+        assignedAdmins: true,
+        rooms: true,
+      },
+    });
+
+    return pg;
+  } catch (error) {
+    throw new Error(
+      `Error fetching PG by ID: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  }
+}
+
 export async function updatePG(id: number, parsedData: UpdatePGDtoType, userRole: string) {
   try {
   

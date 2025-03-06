@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  CreateRoomDtoSchema,
-  GetRoomsDtoSchema,
-  UpdateRoomDtoSchema,
-} from "./room.dto";
-import { createRoom, getRooms, updateRoom, deleteRoom } from "./service";
+import { CreateRoomDtoSchema, GetRoomsDtoSchema, UpdateRoomDtoSchema } from "./room.dto";
+import { createRoom, getRooms, updateRoom, deleteRoom, getRoomById } from "./service";
+
 
 // Controller to create a new room
 export async function createRoomController(
@@ -31,6 +28,25 @@ export async function getRoomsController(
   const response = await getRooms(query);
   res.json(response);
 }
+
+
+export async function getRoomByIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const roomId = Number(req.params.id);
+    if (!roomId || isNaN(roomId)) {
+      throw new Error("Invalid Room ID");
+    }
+    const response = await getRoomById(roomId);
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+} 
+
 
 // Controller to update room details
 export async function updateRoomController(

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { CreatePGDtoSchema, GetPGsDtoSchema, UpdatePGDtoSchema } from "./pg.dto";
-import { createPG, getPGs, updatePG, deletePG } from "./service";
+import { createPG, getPGs, updatePG, deletePG, getPGById } from "./service";
 
 const userRole = "SUPER_ADMIN";
 // Controller to create a new PG
@@ -27,6 +27,23 @@ export async function getPGsController(
   const query = GetPGsDtoSchema.parse(req.query);
   const response = await getPGs(query,userRole);
   res.json(response);
+}
+
+export async function getPGByIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const pgId = Number(req.params.id);
+    if (!pgId || isNaN(pgId)) {
+      throw new Error("Invalid PG ID");
+    }
+    const response = await getPGById(pgId,userRole);
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
 }
 
 // Controller to update PG details

@@ -86,6 +86,29 @@ export async function getRooms(query: GetRoomsDtoType) {
   }
 }
 
+export async function getRoomById(id: number) {
+  try {
+    const room = await prisma.room.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        pg: true,
+        roomTenants: true,
+        tenantRequest: true,
+      },
+    });
+
+    return room;
+  } catch (error) {
+    throw new Error(
+      `Error fetching room by ID: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
 export async function updateRoom(id: number, parsedData: UpdateRoomDtoType) {
   const existingRoom = await prisma.room.findUnique({ where: { id } });
   if (!existingRoom) {
