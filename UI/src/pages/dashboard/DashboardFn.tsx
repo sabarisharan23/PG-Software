@@ -17,15 +17,87 @@ import { Column } from "../../modules/table/Table";
 import TableContainer from "../../modules/table/Table";
 import { ProfileForm } from "../../modules/Form";
 import ApexChart from "../../modules/ApexChart";
-import { Button } from "../../components/ui/button";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../AxiosInstence";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id: number;
-  name: string;
+  username: string;
+  role: string;
   email: string;
 }
 
 export default function SuperAdminDashboard() {
+  const navigate = useNavigate();
+
+  const [dashboardData, setDashboardData] = useState({
+    totalPGListings: 0,
+    totalUsers: 0,
+    totalRooms: 0,
+    availableRooms: 0,
+    totalAdmins: 0,
+    totalSuperAdmins: 0,
+    totalUserss: 0,
+  });
+
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [pgResponse, userResponse, roomResponse] = await Promise.all([
+          axiosInstance.get("/PG/getPG"),
+          axiosInstance.get("/user/getUser"),
+          axiosInstance.get("/room/getRoom"),
+        ]);
+        setDashboardData({
+          totalPGListings: Array.isArray(pgResponse.data)
+            ? pgResponse.data.length
+            : 0,
+          totalUsers: Array.isArray(userResponse.data)
+            ? userResponse.data.length
+            : 0,
+          totalRooms: Array.isArray(roomResponse.data)
+            ? roomResponse.data.length
+            : 0,
+          availableRooms: Array.isArray(roomResponse.data)
+            ? roomResponse.data.filter(
+                (room: { availableStatus: boolean }) => room.availableStatus
+              ).length
+            : 0,
+          totalUserss: Array.isArray(userResponse.data)
+            ? userResponse.data.filter(
+                (user: { role: string }) => user.role === "USER"
+              ).length
+            : 0,
+          totalAdmins: Array.isArray(userResponse.data)
+            ? userResponse.data.filter(
+                (user: { role: string }) => user.role === "ADMIN"
+              ).length
+            : 0,
+          totalSuperAdmins: Array.isArray(userResponse.data)
+            ? userResponse.data.filter(
+                (user: { role: string }) => user.role === "SUPER_ADMIN"
+              ).length
+            : 0,
+        });
+
+        setUsers(userResponse.data);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        toast.error("Failed to fetch dashboard data.");
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const handleButtonClick = () => {
+    navigate("/user-list");
+  };
+
   const cardData = [
     {
       title: "Total PG Listings",
@@ -33,9 +105,9 @@ export default function SuperAdminDashboard() {
       bgColor: "bg-blue-800",
       description: "Active & Pending PG Listings",
       icon: Building2Icon,
-      content: "150",
-      footer: "Active: 140 | Pending: 10",
-      router: "/pg-listings",
+      content: dashboardData.totalPGListings,
+      footer: `Active: ${dashboardData.totalPGListings - 2} | Pending: 2`,
+      router: "/pg-list",
     },
     {
       title: "Total Users",
@@ -43,9 +115,9 @@ export default function SuperAdminDashboard() {
       bgColor: "bg-green-800",
       description: "Admins, PG Owners, Tenants",
       icon: UsersIcon,
-      content: "5000",
-      footer: "Admins: 50 | Owners: 200 | Tenants: 4750",
-      router: "/users",
+      content: dashboardData.totalUsers,
+      footer: `Admins: ${dashboardData.totalAdmins} | Owners:${dashboardData.totalSuperAdmins}| Tenants: ${dashboardData.totalUserss}`,
+      router: "/user-list",
     },
     {
       title: "Available Rooms",
@@ -53,9 +125,11 @@ export default function SuperAdminDashboard() {
       bgColor: "bg-purple-800",
       description: "Vacant vs. Occupied Rooms",
       icon: HomeIcon,
-      content: "1200",
-      footer: "Vacant: 300 | Occupied: 900",
-      router: "/rooms",
+      content: dashboardData.totalRooms,
+      footer: `Vacant: ${dashboardData.availableRooms} | Occupied: ${
+        dashboardData.totalRooms - dashboardData.availableRooms
+      }`,
+      router: "/room-list",
     },
     {
       title: "Recent Bookings & Requests",
@@ -78,52 +152,47 @@ export default function SuperAdminDashboard() {
       router: "/notifications",
     },
   ];
+
   const columns: Column<User>[] = [
     { header: "ID", accessor: "id" },
-    { header: "Name", accessor: "name" },
+    { header: "Name", accessor: "username" },
     { header: "Email", accessor: "email" },
-    {
-      header: "Actions",
-      render: (row) => (
-        <div className="flex gap-2">
-          <Button variant={"link"} onClick={() =>console.log("clicked")} >
-            Edit
-          </Button >
-          <Button  variant={"link"} onClick={() =>console.log("clicked")}>
-            Delete
-          </Button >
-          <Button variant={"link"}  onClick={() =>console.log("clicked") }>
-            View
-          </Button >
-        </div>
-      ),
-    },
-  ];
-  
+    { header: "Role", accessor: "role" },
+    //  {
+    //       header: "Actions",
+    //       render: (row: User) => (
+    //         <div className="flex gap-8">
+    //           {/* Edit User */}
+    //           <CiEdit
+    //             className="text-black font-bold text-2xl cursor-pointer"
+    //             onClick={() => navigate(`/add-user/${row.id}`)}
+    //           />
 
-  const data: User[] = [
-    { id: 1, name: "Alice", email: "alice@example.com" },
-    { id: 2, name: "Bob", email: "bob@example.com" },
-    { id: 3, name: "Charlie", email: "charlie@example.com" },
-    { id: 3, name: "Charlie", email: "charlie@example.com" },
-    { id: 3, name: "Charlie", email: "charlie@example.com" },
-    { id: 3, name: "Charlie", email: "charlie@example.com" },
-    { id: 3, name: "Charlie", email: "charlie@example.com" },
-    { id: 3, name: "Charlie", email: "charlie@example.com" },
+    //           {/* Delete User Dialog Trigger */}
+    //           <CiEraser
+    //             className="text-black text-2xl cursor-pointer"
+    //             onClick={() => {
+    //               setSelectedUser(row);
+    //               setOpen(true);
+    //             }}
+    //           />
+    //         </div>
+    //       ),
+    //     },
   ];
 
   return (
     <div className="py-5 px-2">
-      <div className="flex flex-col lg:flex-row flex-wrap  items-center gap-4 md:gap-6 ">
+      <div className="flex flex-col lg:flex-row flex-wrap items-center gap-4 md:gap-6">
         {cardData.map((item, index) => (
           <Card
             key={index}
             className={`w-96 border cursor-pointer text-sm border-t-4 ${item.borderColor}`}
-            onClick={() => item.router}
+            onClick={() => (window.location.href = item.router)}
           >
             <CardHeader className="text-sm">
               <div className="flex items-center gap-3">
-                <CardTitle className="">
+                <CardTitle>
                   <div className="flex items-center gap-5">
                     <div
                       className={`h-10 w-10 flex justify-center items-center rounded-b-full ${item.bgColor}`}
@@ -141,7 +210,7 @@ export default function SuperAdminDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className=" flex justify-center items-end text-2xl font-bold">
+              <div className="flex justify-center items-end text-2xl font-bold">
                 {item.content}
               </div>
             </CardContent>
@@ -151,20 +220,25 @@ export default function SuperAdminDashboard() {
           </Card>
         ))}
       </div>
+
       <div className="pt-5">
         <TableContainer
           title="User List"
           columns={columns}
-          data={data}
+          data={users}
+          handleButtonClick={handleButtonClick}
+          buttonLabel="View All"
           pageSizeOptions={[5, 10, 15]}
         />
-      </div>{" "}
+      </div>
+
       <div className="pt-5">
-        <ProfileForm />{" "}
-      </div>{" "}
+        <ProfileForm />
+      </div>
+
       <div className="pt-5">
-        <ApexChart />{" "}
-      </div>{" "}
+        <ApexChart />
+      </div>
     </div>
   );
 }

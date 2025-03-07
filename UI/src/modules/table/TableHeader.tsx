@@ -4,12 +4,16 @@ interface TableHeaderProps {
   title: string;
   search: string;
   setSearch: (value: string) => void;
+  handleButtonClick?: () => void;
+  buttonLable?: string;
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
   title,
   search,
   setSearch,
+  handleButtonClick,
+  buttonLable,
 }) => {
   return (
     <div className="flex justify-between items-center pb-4 px-4">
@@ -22,7 +26,17 @@ const TableHeader: React.FC<TableHeaderProps> = ({
           placeholder="Search..."
           className="border rounded px-3 py-1 text-sm"
         />
-        {/* <Button variant={"outline"}>Filter</Button> */}
+        {buttonLable && handleButtonClick ? (
+          <Button
+            size={"default"}
+            variant={"link"}
+            onClick={handleButtonClick}
+          >
+            {buttonLable}
+          </Button>
+        ) : (
+          ""
+        )}{" "}
       </div>
     </div>
   );

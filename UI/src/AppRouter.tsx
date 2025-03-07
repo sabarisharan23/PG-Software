@@ -7,6 +7,8 @@ import DashboardFn from "./pages/dashboard/DashboardFn";
 import AddUser from "./pages/userPage/AddUser";
 import PgList from "./pages/PgPage/PgList";
 import AddPg from "./pages/PgPage/addPg";
+import RoomList from "./pages/room/RoomList";
+import AddRoom from "./pages/room/AddRoom";
 // import RootLayout from "./RootLayout";
 
 
@@ -53,6 +55,21 @@ export const router = createBrowserRouter([
           {
             path: "/add-pg/:id",
             element: <AddPg />,
+            handle: { title: "Home" },
+          },
+          {
+            path: "/room-list",
+            element: <RoomList />,
+            handle: { title: "Home" },
+          },
+          {
+            path: "/add-room",
+            element: <AddRoom />,
+            handle: { title: "Home" },
+          },
+          {
+            path: "/add-room/:id",
+            element: <AddRoom />,
             handle: { title: "Home" },
           },
         ],

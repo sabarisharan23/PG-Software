@@ -73,7 +73,7 @@ const data = {
           icon: LucideHome,
           isActive: false,
           items: [
-            { title: "Room List", url: "#" },
+            { title: "Room List", url: "/room-list" },
             
           ],
         },

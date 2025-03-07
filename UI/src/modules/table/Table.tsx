@@ -16,9 +16,11 @@ interface TableProps<T> {
   columns: Column<T>[];
   data: T[];
   pageSizeOptions: number[];
+  handleButtonClick?:  () => void;
+  buttonLabel?: string;
 }
 
-const TableContainer = <T,>({ title, columns, data, pageSizeOptions }: TableProps<T>) => {
+const TableContainer = <T,>({ title, columns, data, pageSizeOptions,handleButtonClick,buttonLabel }: TableProps<T>) => {
   const [search, setSearch] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
@@ -34,7 +36,7 @@ const TableContainer = <T,>({ title, columns, data, pageSizeOptions }: TableProp
 
   return (
     <div className="border rounded-lg py-4 shadow-lg bg-white">
-      <TableHeader title={title} search={search} setSearch={setSearch} />
+      <TableHeader title={title} search={search} setSearch={setSearch} handleButtonClick={handleButtonClick} buttonLable={buttonLabel} />
       <table className="w-full border-collapse">
         <TableTitle columns={columns} />
         <TableContent data={paginatedData} columns={columns} />
