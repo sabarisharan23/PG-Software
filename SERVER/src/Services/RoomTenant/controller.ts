@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from "express";
-import { CreateRoomTenantDtoType, DeleteRoomTenantDtoType } from "./roomTenant.dto";
-import { createRoomTenant, getRoomTenant, updateRoomTenant, deleteRoomTenant } from "./service";
+import { NextFunction, query, Request, Response } from "express";
+import { CreateRoomTenantDtoType, DeleteRoomTenantDtoType, getRoomTenantsDtoType } from "./roomTenant.dto";
+import { createRoomTenant, getRoomTenant, updateRoomTenant, deleteRoomTenant, getAllRoomTenants } from "./service";
 
 
 // Create RoomTenant Controller
@@ -13,6 +13,20 @@ export async function createRoomTenantController(req: Request, res: Response, ne
     next(error);
   }
 }
+export async function getAllRoomTenantsController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const query = getRoomTenantsDtoType.parse(req.query); // Parse the request query
+    const response = await getAllRoomTenants(query);
+    res.json(response);
+  } catch (error) {
+    next(error); // Pass error to Express error handler
+  }
+}
+
 
 // Get RoomTenant Controller
 export async function getRoomTenantController(req: Request, res: Response, next: NextFunction) {

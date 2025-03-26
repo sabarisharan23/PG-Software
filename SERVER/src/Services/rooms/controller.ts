@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { CreateRoomDtoSchema, GetRoomsDtoSchema, UpdateRoomDtoSchema } from "./room.dto";
-import { createRoom, getRooms, updateRoom, deleteRoom, getRoomById } from "./service";
+import { createRoom, getRooms, getRoomById, updateRoom, deleteRoom } from "./service";
+
 
 
 // Controller to create a new room

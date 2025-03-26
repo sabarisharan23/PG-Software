@@ -9,6 +9,13 @@ const BaseRoomTenantSchema = z.object({
 export const CreateRoomTenantDtoType = BaseRoomTenantSchema;
 export type CreateRoomTenantDtoType = z.infer<typeof CreateRoomTenantDtoType>;
 
+export const getRoomTenantsDtoType = z.object({
+  roomId: z.number().optional(),
+  userId: z.number().optional(),
+});
+
+export type getRoomTenantsDtoType = z.infer<typeof getRoomTenantsDtoType>;
+
 
 export const DeleteRoomTenantDtoType = BaseRoomTenantSchema;
 export type DeleteRoomTenantDtoType = z.infer<typeof DeleteRoomTenantDtoType>;

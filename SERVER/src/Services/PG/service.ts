@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { CreatePGDtoType, UpdatePGDtoType } from "./pg.dto";
+import { CreatePGDtoType, UpdatePGDtoType ,GetPGsDtoType} from "./pg.dto";
 
 const prisma = new PrismaClient();
 
@@ -9,21 +9,34 @@ function isSuperAdmin(userRole: string): boolean {
 
 export async function createPG(parsedData: CreatePGDtoType, userRole: string) {
   try {
-  
+    // Ensure only a Super Admin can create PG
     if (!isSuperAdmin(userRole)) {
       throw new Error("You do not have permission to create a PG.");
     }
 
+    // Check if the PG already exists
     const existingPG = await prisma.pG.findUnique({
       where: {
         pgName: parsedData.pgName,
       },
     });
-    
+
     if (existingPG) {
       throw new Error("PG already exists");
     }
 
+    // Fetch the owner details (role) from user table
+    const owner = await prisma.user.findUnique({
+      where: { id: parsedData.ownedById },
+      select: { role: true },
+    });
+
+    // Ensure the owner is a SUPER_ADMIN
+    if (!owner || owner.role !== "SUPER_ADMIN") {
+      throw new Error("Only a Super Admin can be the owner of a PG.");
+    }
+
+    // Create the new PG
     const newPG = await prisma.pG.create({
       data: {
         pgName: parsedData.pgName,
@@ -40,7 +53,8 @@ export async function createPG(parsedData: CreatePGDtoType, userRole: string) {
   }
 }
 
-export async function getPGs(query: any, userRole: string) {
+
+export async function getPGs(query: GetPGsDtoType, userRole: string) {
   try {
   
     if (!isSuperAdmin(userRole)) {

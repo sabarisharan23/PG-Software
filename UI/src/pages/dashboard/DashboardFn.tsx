@@ -231,10 +231,10 @@ export default function SuperAdminDashboard() {
           pageSizeOptions={[5, 10, 15]}
         />
       </div>
-
+{/* 
       <div className="pt-5">
         <ProfileForm />
-      </div>
+      </div> */}
 
       <div className="pt-5">
         <ApexChart />

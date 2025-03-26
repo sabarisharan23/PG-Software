@@ -57,16 +57,7 @@ const data = {
           
           ],
         },
-        {
-          title: "PG Management",
-          url: "#",
-          icon: LucideHotel,
-          isActive: false,
-          items: [
-            { title: "PG List", url: "/pg-list" },
-            
-          ],
-        },
+       
         {
           title: "Room Management",
           url: "#",
@@ -74,6 +65,7 @@ const data = {
           isActive: false,
           items: [
             { title: "Room List", url: "/room-list" },
+            { title: "RoomTenant List", url: "/room-tenants"}
             
           ],
         },
@@ -87,7 +79,18 @@ const data = {
     },
     {
       label: "Administration",
-      items: [{ title: "Admin Management", url: "#", isActive: false }],
+      items: [
+        {
+          title: "PG Management",
+          url: "#",
+          icon: LucideHotel,
+          isActive: false,
+          items: [
+            { title: "PG List", url: "/pg-list" },
+            
+          ],
+        },
+         { title: "Admin Management", url: "#", isActive: false }],
     },
   ],
   projects: [

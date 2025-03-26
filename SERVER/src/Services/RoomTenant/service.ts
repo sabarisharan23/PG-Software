@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import {
   CreateRoomTenantDtoType,
   DeleteRoomTenantDtoType,
+  getRoomTenantsDtoType,
 } from "./roomTenant.dto";
 
 const prisma = new PrismaClient();
@@ -26,12 +27,42 @@ export async function createRoomTenant(parsedData: CreateRoomTenantDtoType) {
       data: {
         userId: parsedData.userId,
         roomId: parsedData.roomId,
+      },include:{
+        room:true,
+        user:true
       },
     });
     return roomTenant;
   } catch (error) {
     throw new Error(
       `Error creating RoomTenant: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+ 
+export async function getAllRoomTenants(query: getRoomTenantsDtoType) {
+  try {
+    const whereCondition: any = {};
+
+    // Add filters only if roomId or userId is provided
+    if (query.roomId) whereCondition.roomId = query.roomId;
+    if (query.userId) whereCondition.userId = query.userId;
+
+    const roomTenants = await prisma.roomTenant.findMany({
+      where: whereCondition,
+      include:{
+        PG:true,
+        room:true,
+        user:true
+      } // Apply filters dynamically
+    });
+
+    return roomTenants;
+  } catch (error) {
+    throw new Error(
+      `Error fetching RoomTenants: ${
         error instanceof Error ? error.message : "Unknown error"
       }`
     );

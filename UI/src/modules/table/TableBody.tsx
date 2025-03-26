@@ -6,6 +6,9 @@ interface TableContentProps<T> {
 }
 
 const TableContent = <T,>({ data, columns }: TableContentProps<T>) => {
+console.log('columns :', columns);
+console.log('data :', data);
+
   return (
     <tbody className="">
       {data.length > 0 ? (
