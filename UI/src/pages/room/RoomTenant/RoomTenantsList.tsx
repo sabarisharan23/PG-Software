@@ -29,8 +29,7 @@ interface RoomTenant {
   };
   user: {
     id: number;
-    firstname: string;
-    lastname: string;
+    username: string;
   };
 }
 
@@ -105,7 +104,7 @@ export default function RoomTenant() {
     },
     {
       header: "User Name",
-      render: (row) => `${row.user.firstname} ${row.user.lastname}`,
+      render: (row) => `${row.user.username}`,
     },
     {
       header: "Actions",
@@ -114,7 +113,7 @@ export default function RoomTenant() {
           <CiEdit
             className="text-black font-bold text-2xl cursor-pointer"
             onClick={() =>
-              navigate(`/edit-roomTenant/${row.userId}/${row.roomId}`)
+              navigate(`/add-roomTenant/${row.userId}/${row.roomId}`)
             }
           />
           <CiEraser
@@ -154,8 +153,7 @@ export default function RoomTenant() {
               <>
                 Are you sure you want to remove{" "}
                 <span className="font-semibold">
-                  {selectedRoomTenant.user.firstname}{" "}
-                  {selectedRoomTenant.user.lastname}
+                  {selectedRoomTenant.user.username}
                 </span>{" "}
                 from{" "}
                 <span className="font-semibold">

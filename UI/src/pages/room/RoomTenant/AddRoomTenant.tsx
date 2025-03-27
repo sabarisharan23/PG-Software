@@ -8,9 +8,28 @@ import axiosInstance from "../../../AxiosInstence";
 import { Button } from "../../../components/ui/button";
 import { Pg } from "../../PgPage/PgList";
 
-// Schema for form validation
+// Define types
+interface User {
+  id: number;
+  username: string;
+}
+
+interface Room {
+  id: number;
+  roomName: string;
+}
+
+interface RoomTenant {
+  pGId: number;
+  userId: number;
+  roomId: number;
+}
+
+// Form schema
 const formSchema = z.object({
-  pgId: z.string().min(1, { message: "Please select a PG." }),
+  pGId: z.string().min(1, "Please select a PG."),
+  userId: z.string().min(1, "Please select a User."),
+  roomId: z.string().min(1, "Please select a Room."),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -20,7 +39,12 @@ export default function AddRoomTenant() {
   const { userId, roomId } = useParams<{ userId: string; roomId: string }>();
   const isEditMode = Boolean(userId && roomId);
   const [loading, setLoading] = useState(false);
-  const [pgList, setPgList] = useState<Pg[]>([]); // Store list of PGs
+  const [pgList, setPgList] = useState<Pg[]>([]);
+  const [userList, setUserList] = useState<User[]>([]);
+  const [roomList, setRoomList] = useState<Room[]>([]);
+  const [selectedPgName, setSelectedPgName] = useState("");
+  const [selectedUserName, setSelectedUserName] = useState("");
+  const [selectedRoomName, setSelectedRoomName] = useState("");
 
   const {
     control,
@@ -30,59 +54,86 @@ export default function AddRoomTenant() {
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      pgId: "",
+      pGId: "",
+      userId: "",
+      roomId: "",
     },
   });
 
-  // Fetch PG list for the dropdown
+  // Fetch PGs, Users, and Rooms
   useEffect(() => {
-    const fetchPGs = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get<Pg[]>("PG/getPG");
-        setPgList(response.data);
+        const [pgRes, userRes, roomRes] = await Promise.all([
+          axiosInstance.get<Pg[]>("/PG/getPG"),
+          axiosInstance.get<User[]>("/user/getUser"),
+          axiosInstance.get<Room[]>("/room/getRoom"),
+        ]);
+
+        setPgList(pgRes.data);
+        setUserList(userRes.data);
+        setRoomList(roomRes.data);
       } catch (error) {
-        console.error("Error fetching PGs:", error);
-        toast.error("Failed to load PGs.");
+        toast.error("Failed to load data.");
       }
     };
 
-    fetchPGs();
+    fetchData();
   }, []);
 
-  // Fetch room tenant details if in edit mode
+  // Fetch existing RoomTenant details in edit mode
   useEffect(() => {
-    if (isEditMode) {
+    if (isEditMode && userId && roomId && pgList.length && userList.length && roomList.length) {
       const fetchRoomTenant = async () => {
         try {
-          const response = await axiosInstance.get(`/getRoomTenant/${userId}/${roomId}`);
-          setValue("pgId", String(response.data.pgId));
-        } catch (error) {
-          console.error("Error fetching room tenant:", error);
+          const { data } = await axiosInstance.get<RoomTenant>(
+            `/roomTenant/getRoomTenant/${userId}/${roomId}`
+          );
+
+          setValue("pGId", String(data.pGId));
+          setValue("userId", String(data.userId));
+          setValue("roomId", String(data.roomId));
+
+          // Find and set the names for dropdowns
+          const pg = pgList.find((pg) => pg.id === Number(data.pGId));
+          const user = userList.find((user) => user.id === Number(data.userId));
+          const room = roomList.find((room) => room.id === Number(data.roomId));
+
+          setSelectedPgName(pg ? pg.pgName : "Unknown PG");
+          setSelectedUserName(user ? user.username : "Unknown User");
+          setSelectedRoomName(room ? room.roomName : "Unknown Room");
+        } catch {
           toast.error("Failed to fetch room tenant details.");
         }
       };
 
       fetchRoomTenant();
     }
-  }, [isEditMode, userId, roomId, setValue]);
+  }, [isEditMode, userId, roomId, pgList, userList, roomList, setValue]);
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      console.log("Submitting form...", data);
 
       if (isEditMode) {
-        await axiosInstance.put(`/updateRoomTenant/${userId}/${roomId}`, { pgId: Number(data.pgId) });
+        await axiosInstance.put(`roomTenant/updateRoomTenant/${userId}/${roomId}`, {
+          pGId: Number(data.pGId),
+          userId: Number(data.userId),
+          roomId: Number(data.roomId),
+        });
         toast.success("Room Tenant updated successfully.");
       } else {
-        await axiosInstance.post("/createRoomTenant", { pgId: Number(data.pgId) });
+        await axiosInstance.post("roomTenant/createRoomTenant", {
+          pGId: Number(data.pGId),
+          userId: Number(data.userId),
+          roomId: Number(data.roomId),
+        });
         toast.success("Room Tenant added successfully.");
       }
 
       navigate("/room-tenant-list");
-    } catch (error: any) {
-      console.error("Error submitting form:", error.response?.data || error);
-      toast.error(error.response?.data?.message || "Failed to submit Room Tenant details.");
+    } catch {
+      toast.error("Failed to submit Room Tenant details.");
     } finally {
       setLoading(false);
     }
@@ -96,20 +147,17 @@ export default function AddRoomTenant() {
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-          {/* PG Selection Dropdown */}
+          {/* PG Dropdown */}
           <div>
             <label className="text-sm font-semibold text-gray-700 mb-2 block">
               Select PG <span className="text-red-500">*</span>
             </label>
             <Controller
-              name="pgId"
+              name="pGId"
               control={control}
               render={({ field }) => (
-                <select
-                  {...field}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                >
-                  <option value="">Select a PG</option>
+                <select {...field} className="w-full border border-gray-300 rounded-lg p-2">
+                  <option value="">{isEditMode ? selectedPgName : "Select a PG"}</option>
                   {pgList.map((pg) => (
                     <option key={pg.id} value={pg.id}>
                       {pg.pgName}
@@ -118,7 +166,51 @@ export default function AddRoomTenant() {
                 </select>
               )}
             />
-            {errors.pgId && <p className="text-red-500 text-sm mt-2">{errors.pgId.message}</p>}
+            {errors.pGId && <p className="text-red-500 text-sm mt-2">{errors.pGId.message}</p>}
+          </div>
+
+          {/* User Dropdown */}
+          <div>
+            <label className="text-sm font-semibold text-gray-700 mb-2 block">
+              Select User <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="userId"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className="w-full border border-gray-300 rounded-lg p-2">
+                  <option value="">{isEditMode ? selectedUserName : "Select a User"}</option>
+                  {userList.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.username}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
+            {errors.userId && <p className="text-red-500 text-sm mt-2">{errors.userId.message}</p>}
+          </div>
+
+          {/* Room Dropdown */}
+          <div>
+            <label className="text-sm font-semibold text-gray-700 mb-2 block">
+              Select Room <span className="text-red-500">*</span>
+            </label>
+            <Controller
+              name="roomId"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className="w-full border border-gray-300 rounded-lg p-2">
+                  <option value="">{isEditMode ? selectedRoomName : "Select a Room"}</option>
+                  {roomList.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      {room.roomName}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
+            {errors.roomId && <p className="text-red-500 text-sm mt-2">{errors.roomId.message}</p>}
           </div>
 
           {/* Submit Button */}

@@ -72,7 +72,10 @@ export default function AddUser() {
       const fetchUser = async () => {
         try {
           const response = await axiosInstance.get(`/user/getUser/${id}`);
+          console.log('response ------------------->:', response);
           const userData = response.data;
+          console.log('userData ------------------->:', userData);
+
 
           setValue("firstname", userData.firstname || "");
           setValue("lastname", userData.lastname || "");

@@ -9,7 +9,7 @@ import PgList from "./pages/PgPage/PgList";
 import AddPg from "./pages/PgPage/addPg";
 import RoomList from "./pages/room/RoomList";
 import AddRoom from "./pages/room/AddRoom";
-import RoomTenants from "./pages/room/RoomTenant/RoomTenants";
+import RoomTenants from "./pages/room/RoomTenant/RoomTenantsList";
 import AddRoomTenant from "./pages/room/RoomTenant/AddRoomTenant";
 // import RootLayout from "./RootLayout";
 
@@ -84,7 +84,7 @@ export const router = createBrowserRouter([
         handle: { title: "Home" },
       },
       {
-        path: "/add-roomTenant/:id",
+        path: "/add-roomTenant/:userId/:roomId",
         element: <AddRoomTenant/>,
         handle: { title: "Home" },
       },

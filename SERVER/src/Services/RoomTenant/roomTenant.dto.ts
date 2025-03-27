@@ -4,9 +4,15 @@ import z from "zod";
 const BaseRoomTenantSchema = z.object({
   userId: z.number(),
   roomId: z.number(),
+
+  pGId: z.number().optional(),
 });
 
-export const CreateRoomTenantDtoType = BaseRoomTenantSchema;
+export const CreateRoomTenantDtoType = z.object({
+  userId: z.number(),
+  roomId: z.number(),
+  pGId: z.number().optional(),
+});
 export type CreateRoomTenantDtoType = z.infer<typeof CreateRoomTenantDtoType>;
 
 export const getRoomTenantsDtoType = z.object({

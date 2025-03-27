@@ -10,6 +10,16 @@ const prisma = new PrismaClient();
 // Create RoomTenant
 export async function createRoomTenant(parsedData: CreateRoomTenantDtoType) {
   try {
+    // Check if PG exists
+    const existingPG = await prisma.pG.findUnique({
+      where: { id: parsedData.pGId },
+    });
+
+    if (!existingPG) {
+      throw new Error("PG not found");
+    }
+
+    // Check if RoomTenant already exists
     const existingRoomTenant = await prisma.roomTenant.findUnique({
       where: {
         userId_roomId: {
@@ -23,15 +33,19 @@ export async function createRoomTenant(parsedData: CreateRoomTenantDtoType) {
       throw new Error("Room Tenant already exists");
     }
 
+    // Create RoomTenant with pGId
     const roomTenant = await prisma.roomTenant.create({
       data: {
         userId: parsedData.userId,
         roomId: parsedData.roomId,
-      },include:{
-        room:true,
-        user:true
+        pGId: parsedData.pGId, 
+      },
+      include: {
+        room: true,
+        user: true,
       },
     });
+
     return roomTenant;
   } catch (error) {
     throw new Error(
