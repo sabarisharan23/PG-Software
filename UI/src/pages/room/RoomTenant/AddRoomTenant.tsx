@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import axiosInstance from "../../../AxiosInstence";
 import { Button } from "../../../components/ui/button";
-import { Pg } from "../../PgPage/PgList";
+import { Pg } from "../../Pg/PgList";
 
 // Define types
 interface User {
@@ -83,7 +83,14 @@ export default function AddRoomTenant() {
 
   // Fetch existing RoomTenant details in edit mode
   useEffect(() => {
-    if (isEditMode && userId && roomId && pgList.length && userList.length && roomList.length) {
+    if (
+      isEditMode &&
+      userId &&
+      roomId &&
+      pgList.length &&
+      userList.length &&
+      roomList.length
+    ) {
       const fetchRoomTenant = async () => {
         try {
           const { data } = await axiosInstance.get<RoomTenant>(
@@ -116,11 +123,14 @@ export default function AddRoomTenant() {
       setLoading(true);
 
       if (isEditMode) {
-        await axiosInstance.put(`roomTenant/updateRoomTenant/${userId}/${roomId}`, {
-          pGId: Number(data.pGId),
-          userId: Number(data.userId),
-          roomId: Number(data.roomId),
-        });
+        await axiosInstance.put(
+          `roomTenant/updateRoomTenant/${userId}/${roomId}`,
+          {
+            pGId: Number(data.pGId),
+            userId: Number(data.userId),
+            roomId: Number(data.roomId),
+          }
+        );
         toast.success("Room Tenant updated successfully.");
       } else {
         await axiosInstance.post("roomTenant/createRoomTenant", {
@@ -131,7 +141,7 @@ export default function AddRoomTenant() {
         toast.success("Room Tenant added successfully.");
       }
 
-      navigate("/room-tenant-list");
+      navigate("/room-tenants");
     } catch {
       toast.error("Failed to submit Room Tenant details.");
     } finally {
@@ -156,8 +166,13 @@ export default function AddRoomTenant() {
               name="pGId"
               control={control}
               render={({ field }) => (
-                <select {...field} className="w-full border border-gray-300 rounded-lg p-2">
-                  <option value="">{isEditMode ? selectedPgName : "Select a PG"}</option>
+                <select
+                  {...field}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                >
+                  <option value="">
+                    {isEditMode ? selectedPgName : "Select a PG"}
+                  </option>
                   {pgList.map((pg) => (
                     <option key={pg.id} value={pg.id}>
                       {pg.pgName}
@@ -166,7 +181,9 @@ export default function AddRoomTenant() {
                 </select>
               )}
             />
-            {errors.pGId && <p className="text-red-500 text-sm mt-2">{errors.pGId.message}</p>}
+            {errors.pGId && (
+              <p className="text-red-500 text-sm mt-2">{errors.pGId.message}</p>
+            )}
           </div>
 
           {/* User Dropdown */}
@@ -178,8 +195,13 @@ export default function AddRoomTenant() {
               name="userId"
               control={control}
               render={({ field }) => (
-                <select {...field} className="w-full border border-gray-300 rounded-lg p-2">
-                  <option value="">{isEditMode ? selectedUserName : "Select a User"}</option>
+                <select
+                  {...field}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                >
+                  <option value="">
+                    {isEditMode ? selectedUserName : "Select a User"}
+                  </option>
                   {userList.map((user) => (
                     <option key={user.id} value={user.id}>
                       {user.username}
@@ -188,7 +210,11 @@ export default function AddRoomTenant() {
                 </select>
               )}
             />
-            {errors.userId && <p className="text-red-500 text-sm mt-2">{errors.userId.message}</p>}
+            {errors.userId && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.userId.message}
+              </p>
+            )}
           </div>
 
           {/* Room Dropdown */}
@@ -200,8 +226,13 @@ export default function AddRoomTenant() {
               name="roomId"
               control={control}
               render={({ field }) => (
-                <select {...field} className="w-full border border-gray-300 rounded-lg p-2">
-                  <option value="">{isEditMode ? selectedRoomName : "Select a Room"}</option>
+                <select
+                  {...field}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                >
+                  <option value="">
+                    {isEditMode ? selectedRoomName : "Select a Room"}
+                  </option>
                   {roomList.map((room) => (
                     <option key={room.id} value={room.id}>
                       {room.roomName}
@@ -210,13 +241,21 @@ export default function AddRoomTenant() {
                 </select>
               )}
             />
-            {errors.roomId && <p className="text-red-500 text-sm mt-2">{errors.roomId.message}</p>}
+            {errors.roomId && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.roomId.message}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
           <div className="flex justify-end">
             <Button type="submit" disabled={loading} className="px-6">
-              {loading ? "Submitting..." : isEditMode ? "Update Room Tenant" : "Add Room Tenant"}
+              {loading
+                ? "Submitting..."
+                : isEditMode
+                ? "Update Room Tenant"
+                : "Add Room Tenant"}
             </Button>
           </div>
         </form>

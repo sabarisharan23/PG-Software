@@ -5,12 +5,16 @@ import LoginPage from "./LoginPage";
 import UserList from "./pages/userPage/UserList";
 import DashboardFn from "./pages/dashboard/DashboardFn";
 import AddUser from "./pages/userPage/AddUser";
-import PgList from "./pages/PgPage/PgList";
-import AddPg from "./pages/PgPage/addPg";
+import PgList from "./pages/Pg/PgList";
+import AddPg from "./pages/Pg/addPg";
 import RoomList from "./pages/room/RoomList";
 import AddRoom from "./pages/room/AddRoom";
 import RoomTenants from "./pages/room/RoomTenant/RoomTenantsList";
 import AddRoomTenant from "./pages/room/RoomTenant/AddRoomTenant";
+import TenantRequestList from "./pages/tenantRequest/TenantRequestList";
+import AddTenantRequest from "./pages/tenantRequest/AddTenantRequest";
+import AssignedAdminList from "./pages/adminAssignment/AssignedAdminList";
+import AddAssignedAdmin from "./pages/adminAssignment/AddAssignedAdmin";
 // import RootLayout from "./RootLayout";
 
 export const router = createBrowserRouter([
@@ -80,12 +84,37 @@ export const router = createBrowserRouter([
       },
       {
         path: "/add-roomTenant",
-        element: <AddRoomTenant/>,
+        element: <AddRoomTenant />,
         handle: { title: "Home" },
       },
       {
         path: "/add-roomTenant/:userId/:roomId",
-        element: <AddRoomTenant/>,
+        element: <AddRoomTenant />,
+        handle: { title: "Home" },
+      },
+      {
+        path: "/tenant-request",
+        element: <TenantRequestList />,
+        handle: { title: "Home" },
+      },
+      {
+        path: "/add-tenantRequest",
+        element: <AddTenantRequest/>,
+        handle: { title: "Home" },
+      },
+      {
+        path: "/assigned-admin",
+        element: <AssignedAdminList/>,
+        handle: { title: "Home" },
+      },
+      {
+        path: "/add-assignedAdmin",
+        element: <AddAssignedAdmin/>,
+        handle: { title: "Home" },
+      },
+      {
+        path: "/add-assignedAdmin/:adminId/:pgId",
+        element: <AddAssignedAdmin/>,
         handle: { title: "Home" },
       },
     ],

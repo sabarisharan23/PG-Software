@@ -43,6 +43,7 @@ const data = {
       },
     ],
   },
+  
   navGroups: [
     {
       label: "Management",
@@ -74,7 +75,9 @@ const data = {
     {
       label: "Requests & Approvals",
       items: [
-        { title: "Tenant Requests", url: "#", icon: LucideGitPullRequest, isActive: false },
+        { title: "Tenant Requests", url: "#", icon: LucideGitPullRequest, isActive: false ,items:[{
+          title:"Tenant Requests ", url:"/tenant-request"
+        }]},
       ],
     },
     {
@@ -87,10 +90,12 @@ const data = {
           isActive: false,
           items: [
             { title: "PG List", url: "/pg-list" },
+            { title: "PG Admin Managment", url: "/assigned-admin" },
             
           ],
         },
-         { title: "Admin Management", url: "#", isActive: false }],
+        //  { title: "Admin Management", url: "#", isActive: false }
+        ],
     },
   ],
   projects: [

@@ -1,3 +1,4 @@
+import { get } from "http";
 import z from "zod";
 
 // Base Schema for Admin Assignment
@@ -10,6 +11,12 @@ const BaseAdminAssignmentSchema = z.object({
 export const CreatePgAdminAssignmentDtoType = BaseAdminAssignmentSchema;
 export type CreatePgAdminAssignmentDtoType = z.infer<typeof CreatePgAdminAssignmentDtoType>;
 
+export const getAllPgAdminDtoType = z.object({
+  adminId: z.number().optional(),
+  pgId: z.number().optional(),
+}); 
+
+export type getAllPgAdminDtoType = z.infer<typeof getAllPgAdminDtoType>;
 // Delete Admin Assignment DTO
 export const DeletePgAdminAssignmentDtoType = BaseAdminAssignmentSchema;
 export type DeletePgAdminAssignmentDtoType = z.infer<typeof DeletePgAdminAssignmentDtoType>;

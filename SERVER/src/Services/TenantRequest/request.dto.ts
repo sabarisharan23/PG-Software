@@ -4,7 +4,7 @@ const baseSchema = z.object({
   userId: z.number(),
   roomId: z.number(),
   pgId: z.number(),
-  status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
+  status: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
 });
 
 export const CreateRequestDtoType = baseSchema;

@@ -1,6 +1,6 @@
 import { Request, Response,NextFunction } from "express";
-import { createPgAdminAssignment, deletePgAdminAssignment, getPgAdminAssignment, updatePgAdminAssignment } from "./service";
-import { CreatePgAdminAssignmentDtoType, DeletePgAdminAssignmentDtoType,  UpdatePgAdminAssignmentDtoType } from "./pgAdminAssignment.dto";
+import { createPgAdminAssignment, deletePgAdminAssignment, getAllPgAdmins, getPgAdminAssignment, updatePgAdminAssignment } from "./service";
+import { CreatePgAdminAssignmentDtoType, DeletePgAdminAssignmentDtoType,  getAllPgAdminDtoType,  UpdatePgAdminAssignmentDtoType } from "./pgAdminAssignment.dto";
 
 export async function createPgAdminAssignmentController(req: Request, res: Response, next: NextFunction) {
     try {
@@ -10,24 +10,35 @@ export async function createPgAdminAssignmentController(req: Request, res: Respo
     } catch (error) {
         next(error);
     }
-}       
+}     
 
-export async function getPgAdminAssignmentController(req: Request, res: Response, next: NextFunction) {
+export async function getAllPgAdminsController(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId, roomId } = req.params;
-        const pgAdminAssignment = await getPgAdminAssignment(Number(userId), Number(roomId));
-        res.status(200).json(pgAdminAssignment);
+        const query = getAllPgAdminDtoType.parse(req.query);
+        const response = await getAllPgAdmins(query);
+        res.status(200).json(response);
     } catch (error) {
         next(error);
     }
 }
 
+export async function getPgAdminAssignmentController(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { adminId, pgId } = req.params;
+      const pgAdminAssignment = await getPgAdminAssignment(Number(adminId), Number(pgId));
+      res.status(200).json(pgAdminAssignment);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+
 
 export async function updatePgAdminAssignmentController(req: Request, res: Response, next: NextFunction) {
     try {
-        const { userId, roomId } = req.params;
+        const {adminId,pgId } = req.params;
         const body = UpdatePgAdminAssignmentDtoType.parse(req.body);
-        const pgAdminAssignment = await updatePgAdminAssignment(Number(userId), Number(roomId), body);
+        const pgAdminAssignment = await updatePgAdminAssignment(Number(adminId), Number(pgId), body);
         res.status(200).json(pgAdminAssignment);
     } catch (error) {
         next(error);

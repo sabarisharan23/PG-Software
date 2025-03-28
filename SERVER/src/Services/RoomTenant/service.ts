@@ -3,6 +3,7 @@ import {
   CreateRoomTenantDtoType,
   DeleteRoomTenantDtoType,
   getRoomTenantsDtoType,
+  UpdateRoomTenantDtoType,
 } from "./roomTenant.dto";
 
 const prisma = new PrismaClient();
@@ -115,7 +116,7 @@ export async function getRoomTenant(userId: number, roomId: number) {
 export async function updateRoomTenant(
   userId: number,
   roomId: number,
-  parsedData: Partial<CreateRoomTenantDtoType>
+  parsedData: Partial<UpdateRoomTenantDtoType>
 ) {
   try {
     const roomTenant = await prisma.roomTenant.findUnique({

@@ -2,7 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import {
   CreatePgAdminAssignmentDtoType,
   DeletePgAdminAssignmentDtoType,
-  GetPgAdminAssignmentDtoType,
+  getAllPgAdminDtoType,
+  
   UpdatePgAdminAssignmentDtoType,
 } from "./pgAdminAssignment.dto";
 
@@ -22,14 +23,16 @@ export async function createPgAdminAssignment(
     });
 
     if (existingPgAdminAssignment) {
-      throw new Error("Pg Admin Assignment already exists");
+      throw new Error("Admin already assigned to theis PG");
     }
 
     const pgAdminAssignment = await prisma.pgAssignedAdmin.create({
       data: {
         adminId: parsedData.adminId,
         pgId: parsedData.pgId,
-      },
+      }, include: {
+        admin: true, pg: true
+      }
     });
     return pgAdminAssignment;
   } catch (error) {
@@ -39,34 +42,62 @@ export async function createPgAdminAssignment(
     );
   }
 }
-
-export async function getPgAdminAssignment(
-  adminId: number,
-  pgId: number
-) {
+export async function getAllPgAdmins(query: getAllPgAdminDtoType) {
   try {
-    const pgAdminAssignment = await prisma.pgAssignedAdmin.findUnique({
-      where: {
-        adminId_pgId: { adminId, pgId },
+ const whereCondition ={
+   adminId: query.adminId || undefined,
+   pgId: query.pgId || undefined,
+ }
+
+    const allAdmins = await prisma.pgAssignedAdmin.findMany({
+      where: whereCondition,
+      include: {
+        admin: true,
+        pg: true,
       },
     });
 
-    if (!pgAdminAssignment) {
-      throw new Error("PgAdminAssignment not found");
-    }
-
-    return pgAdminAssignment;
+    return allAdmins;
   } catch (error) {
     throw new Error(
-      `Error fetching PgAdminAssignment: ${error instanceof Error ? error.message : "Unknown error"
+      `Error fetching AllPgAdmin: ${
+        error instanceof Error ? error.message : "Unknown error"
       }`
     );
   }
 }
 
+export async function getPgAdminAssignment(adminId: number, pgId: number) {
+  try {
+    const pgAdminAssignment = await prisma.pgAssignedAdmin.findUnique({
+      where: {
+        adminId_pgId: {
+          adminId,
+          pgId,
+        },
+      },
+      include: {
+        admin: true,
+        pg: true,
+      },
+    });
+
+    return pgAdminAssignment;
+  } catch (error) {
+    throw new Error(
+      `Error fetching PgAdminAssignment: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
+
 export async function updatePgAdminAssignment(adminId: number, pgId: number, parsedData: Partial<UpdatePgAdminAssignmentDtoType>) {
   try {
     const assignedAdmin = await prisma.pgAssignedAdmin.findUnique({
+
+      
       where: {
         adminId_pgId: {
           adminId,
@@ -74,6 +105,7 @@ export async function updatePgAdminAssignment(adminId: number, pgId: number, par
         }
       }
     });
+    console.log("assigned admin",assignedAdmin);
     if (!assignedAdmin) {
       throw new Error("Assigned Admin not found");
     };

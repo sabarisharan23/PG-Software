@@ -15,14 +15,15 @@ import {
 
 // Define the expected shape of a pg
 export interface Pg {
-    id: number;       
-    pgName: string;   
-    location: string; 
-    ownedById: number;
-    ownedBy: string;
+  id: number;
+  pgName: string;
+  location: string;
+  ownedById: number;
+  ownedBy: {
     username: string;
-  }
-  
+  };
+}
+
 export default function PgList() {
   const navigate = useNavigate();
   const [data, setData] = useState<Pg[]>([]);
@@ -65,7 +66,7 @@ export default function PgList() {
     { header: "ID", accessor: "id" },
     { header: "PG Name", accessor: "pgName" },
     { header: "Location", accessor: "location" },
-    { header: "Owner ID",  render: (row) => row.ownedBy.username },
+    { header: "Owner ID", render: (row) => row.ownedBy.username },
     {
       header: "Actions",
       render: (row: Pg) => (
@@ -126,7 +127,11 @@ export default function PgList() {
             )}
           </DialogDescription>
           <DialogFooter className="flex gap-4 justify-end">
-            <Button onClick={handleDeletePg} variant="destructive" disabled={!selectedPg}>
+            <Button
+              onClick={handleDeletePg}
+              variant="destructive"
+              disabled={!selectedPg}
+            >
               Delete
             </Button>
             <Button onClick={() => setOpen(false)}>Cancel</Button>

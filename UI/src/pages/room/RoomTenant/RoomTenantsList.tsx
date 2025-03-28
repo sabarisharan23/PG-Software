@@ -91,20 +91,20 @@ export default function RoomTenant() {
 
   const columns: Column<RoomTenant>[] = [
     {
-      header: "PG Name",
-      render: (row) => row.PG?.pgName ?? "N/A",
+      header: "Room Name",
+      render: (row) => row.room.roomName,
     },
     {
       header: "Room Number",
       render: (row) => row.room.roomNumber,
     },
     {
-      header: "Room Name",
-      render: (row) => row.room.roomName,
-    },
-    {
       header: "User Name",
       render: (row) => `${row.user.username}`,
+    },
+    {
+      header: "PG Name",
+      render: (row) => row.PG?.pgName ?? "N/A",
     },
     {
       header: "Actions",

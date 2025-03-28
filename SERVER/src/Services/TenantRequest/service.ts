@@ -42,7 +42,6 @@ export async function createTenantRequest(parsedData: CreateRequestDtoType) {
                 userId: parsedData.userId,
                 roomId: parsedData.roomId,
                 pgId: parsedData.pgId,
-                status: parsedData.status,
             },
         });
 

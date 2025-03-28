@@ -61,7 +61,7 @@ export async function getPGs(query: GetPGsDtoType, userRole: string) {
       throw new Error("You do not have permission to view PGs.");
     }
 
-    const whereCondition: any = {
+    const whereCondition = {
       id: query.id !== undefined ? query.id : undefined,
       pgName: query.pgName || undefined,
       location: query.location || undefined,
