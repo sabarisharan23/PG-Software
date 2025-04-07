@@ -14,7 +14,7 @@ function LoginPage() {
 
   const navigate = useNavigate();
   const handleLogin = () => {
-    navigate("/dashboard");
+    navigate("/landing-page");
   };
   return (
     <div className="font-[sans-serif] min-h-screen flex items-center justify-center py-6 px-4">
