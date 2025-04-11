@@ -11,7 +11,7 @@ import {
   export default function Footer() {
     return (
       <footer className="bg-slate-800 text-slate-200 px-6 md:px-16 py-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className=" mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Company Info */}
           <div>
             <h2 className="text-2xl font-bold text-white mb-4">PG Software</h2>
