@@ -1,6 +1,6 @@
 const PGShowcase = () => {
   return (
-    <section className="relative w-screen h-screen bg-[#f8f8f8] overflow-hidden flex items-center justify-center px-4 sm:px-12">
+    <section className="relative w-screen h-screen  overflow-hidden flex items-center justify-center px-4 sm:px-12">
       {/* Background Text */}
       <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[13vw] font-serif font-bold text-gray-300 z-0 pointer-events-none select-none whitespace-nowrap">
         stay &nbsp; closer
@@ -8,9 +8,9 @@ const PGShowcase = () => {
 
       {/* PG Image */}
       <img
-        src="/png1.png"
+        src="/png5.png"
         alt="PG Room"
-        className="pr-28 z-10 h-[500px] sm:h-[850px] object-contain"
+        className="pr-28 z-10 h-[500px] sm:h-[850px] drop-shadow-2xl object-contain"
       />
 
       {/* Floating Info Card */}

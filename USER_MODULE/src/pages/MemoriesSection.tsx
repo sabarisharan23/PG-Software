@@ -50,7 +50,7 @@ const sections = [
 
 export default function AlternatingCardSection() {
   return (
-    <div className="bg-white px-6 md:px-20 py-20 space-y-28">
+    <div className="bg-white px-6 md:px-20 py-20 space-y-28 ">
       {sections.map((section, index) => {
         const isEven = index % 2 === 0;
 
@@ -63,15 +63,15 @@ export default function AlternatingCardSection() {
           >
             {/* Card Section */}
             <div
-              className={`relative w-full md:w-1/2 h-[300px] md:h-[350px] rounded-[20px] ${section.bgColor} flex items-end px-8 py-6`}
+              className={`relative w-full md:w-1/2 h-[300px] md:h-[350px] rounded-[20px] ${section.bgColor} flex items-end px-8 py-6 hover:-skew-y-2 shadow-xl transition-all duration-100`}
             >
               
               {/* Text on Card */}
               <div className="z-10">
-                <h2 className="text-5xl font-extralight text-gray-800">
+                <h2 className="text-5xl font-extralight text-white md:text-gray-800">
                   {section.title}
                 </h2>
-                <h2 className="text-5xl font-bold text-gray-800">
+                <h2 className="text-5xl font-bold text-white md:text-gray-800">
                   {section.highlight}
                 </h2>
               </div>
