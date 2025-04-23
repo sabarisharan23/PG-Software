@@ -76,8 +76,30 @@ model Room {
   attachedBathrooms Boolean   @default(true)
   balconyStatus     Boolean   @default(true)
   cctvStatus        Boolean   @default(true)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+
+  // New Fields for Amenities & Services
+  airConditioned Boolean @default(false)
+  wifi           Boolean @default(false)
+  refrigerator   Boolean @default(false)
+  housekeeping   Boolean @default(false)
+  powerBackup    Boolean @default(false)
+  bedding        Boolean @default(false)
+  lift           Boolean @default(false)
+  drinkingWater  Boolean @default(false)
+
+  // Additional Services
+  highSpeedWifi            Boolean  @default(false)
+  hotWaterSupply           Boolean  @default(false)
+  professionalHousekeeping Boolean  @default(false)
+  laundryFacilities        Boolean  @default(false)
+  biometricEntry           Boolean  @default(false)
+  hotMealsIncluded         Boolean  @default(false)
+  security24x7             Boolean  @default(false)
+  diningArea               Boolean  @default(false)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  foodMenu Json?
 
   pgId          Int             @map("pg_id")
   pg            PG              @relation(fields: [pgId], references: [id])
@@ -120,6 +142,5 @@ model TenantRequest {
   room Room @relation(fields: [roomId], references: [id])
   pg   PG   @relation(fields: [pgId], references: [id])
 
-    @@unique([userId, roomId])  
-
+  @@unique([userId, roomId])
 }

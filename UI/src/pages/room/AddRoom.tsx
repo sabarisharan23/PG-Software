@@ -11,17 +11,47 @@ import { toast } from "sonner";
 const formSchema = z.object({
   roomNumber: z.coerce.number().min(1, "Room Number is required."),
   roomName: z.string().min(2, "Room Name is required."),
-  roomType: z.enum(["SINGLE", "DOUBLE", "TRIPLE", "QUADRUPLE", "STANDARD", "PREMIUM"]),
-  floor: z.coerce.number().min(0, "Floor number must be non-negative."),
-  blockName: z.string().min(1, "Block Name is required."),
-  rentPrice: z.coerce.number().min(0, "Rent Price must be non-negative."),
-  depositPrice: z.coerce.number().min(0, "Deposit Price must be non-negative."),
-  roomSize: z.coerce.number().min(1, "Room Size must be at least 1."),
+  roomType: z.enum([
+    "SINGLE",
+    "DOUBLE",
+    "TRIPLE",
+    "QUADRUPLE",
+    "STANDARD",
+    "PREMIUM",
+  ]),
+  floor: z.coerce.number().min(0),
+  blockName: z.string().min(1),
+  rentPrice: z.coerce.number().min(0),
+  depositPrice: z.coerce.number().min(0),
+  roomSize: z.coerce.number().min(1),
   availableStatus: z.boolean(),
   attachedBathrooms: z.boolean(),
   balconyStatus: z.boolean(),
   cctvStatus: z.boolean(),
-  pgId: z.coerce.number().min(1, "PG ID is required."),
+  airConditioned: z.boolean(),
+  wifi: z.boolean(),
+  refrigerator: z.boolean(),
+  housekeeping: z.boolean(),
+  powerBackup: z.boolean(),
+  bedding: z.boolean(),
+  lift: z.boolean(),
+  drinkingWater: z.boolean(),
+  highSpeedWifi: z.boolean(),
+  hotWaterSupply: z.boolean(),
+  professionalHousekeeping: z.boolean(),
+  laundryFacilities: z.boolean(),
+  biometricEntry: z.boolean(),
+  hotMealsIncluded: z.boolean(),
+  security24x7: z.boolean(),
+  diningArea: z.boolean(),
+  foodMenu: z
+    .object({
+      breakfast: z.array(z.string()).optional(),
+      lunch: z.array(z.string()).optional(),
+      dinner: z.array(z.string()).optional(),
+    })
+    .nullable(),
+  pgId: z.coerce.number().min(1),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -53,6 +83,27 @@ export default function AddRoom() {
       attachedBathrooms: false,
       balconyStatus: false,
       cctvStatus: false,
+      airConditioned: false,
+      wifi: false,
+      refrigerator: false,
+      housekeeping: false,
+      powerBackup: false,
+      bedding: false,
+      lift: false,
+      drinkingWater: false,
+      highSpeedWifi: false,
+      hotWaterSupply: false,
+      professionalHousekeeping: false,
+      laundryFacilities: false,
+      biometricEntry: false,
+      hotMealsIncluded: false,
+      security24x7: false,
+      diningArea: false,
+      foodMenu: {
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+      },
       pgId: 0,
     },
   });
@@ -94,7 +145,9 @@ export default function AddRoom() {
       navigate("/room-list");
     } catch (error: any) {
       console.error("Error submitting form:", error.response?.data || error);
-      toast.error(error.response?.data?.message || "Failed to submit room details.");
+      toast.error(
+        error.response?.data?.message || "Failed to submit room details."
+      );
     } finally {
       setLoading(false);
     }
@@ -118,15 +171,25 @@ export default function AddRoom() {
                 { name: "blockName", label: "Block Name", type: "text" },
               ].map(({ name, label, type }) => (
                 <div key={name}>
-                  <label className="text-sm font-semibold text-gray-700">{label} *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    {label} *
+                  </label>
                   <Controller
                     name={name as keyof FormData}
                     control={control}
                     render={({ field }) => (
-                      <input {...field} type={type} className="w-full border border-gray-300 rounded-lg p-2" />
+                      <input
+                        {...field}
+                        type={type}
+                        className="w-full border border-gray-300 rounded-lg p-2"
+                      />
                     )}
                   />
-                  {errors[name as keyof FormData] && <p className="text-red-500 text-sm">{errors[name as keyof FormData]?.message}</p>}
+                  {errors[name as keyof FormData] && (
+                    <p className="text-red-500 text-sm">
+                      {errors[name as keyof FormData]?.message}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -135,20 +198,34 @@ export default function AddRoom() {
             <div className="flex-1 flex flex-col gap-6">
               {[
                 { name: "rentPrice", label: "Rent Price", type: "number" },
-                { name: "depositPrice", label: "Deposit Price", type: "number" },
+                {
+                  name: "depositPrice",
+                  label: "Deposit Price",
+                  type: "number",
+                },
                 { name: "roomSize", label: "Room Size", type: "number" },
                 { name: "pgId", label: "PG ID", type: "number" },
               ].map(({ name, label, type }) => (
                 <div key={name}>
-                  <label className="text-sm font-semibold text-gray-700">{label} *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    {label} *
+                  </label>
                   <Controller
                     name={name as keyof FormData}
                     control={control}
                     render={({ field }) => (
-                      <input {...field} type={type} className="w-full border border-gray-300 rounded-lg p-2" />
+                      <input
+                        {...field}
+                        type={type}
+                        className="w-full border border-gray-300 rounded-lg p-2"
+                      />
                     )}
                   />
-                  {errors[name as keyof FormData] && <p className="text-red-500 text-sm">{errors[name as keyof FormData]?.message}</p>}
+                  {errors[name as keyof FormData] && (
+                    <p className="text-red-500 text-sm">
+                      {errors[name as keyof FormData]?.message}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -156,13 +233,25 @@ export default function AddRoom() {
 
           {/* Room Type Dropdown */}
           <div>
-            <label className="text-sm font-semibold text-gray-700">Room Type *</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Room Type *
+            </label>
             <Controller
               name="roomType"
               control={control}
               render={({ field }) => (
-                <select {...field} className="w-full border border-gray-300 rounded-lg p-2">
-                  {["SINGLE", "DOUBLE", "TRIPLE", "QUADRUPLE", "STANDARD", "PREMIUM"].map((type) => (
+                <select
+                  {...field}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                >
+                  {[
+                    "SINGLE",
+                    "DOUBLE",
+                    "TRIPLE",
+                    "QUADRUPLE",
+                    "STANDARD",
+                    "PREMIUM",
+                  ].map((type) => (
                     <option key={type} value={type}>
                       {type}
                     </option>
@@ -173,13 +262,29 @@ export default function AddRoom() {
           </div>
 
           {/* Boolean Checkboxes (Fixed Type Issues) */}
-          <div className="flex flex-wrap gap-6">
+          <div className="grid grid-cols-2 gap-4">
             {[
-              { name: "availableStatus", label: "Available" },
-              { name: "attachedBathrooms", label: "Attached Bathrooms" },
-              { name: "balconyStatus", label: "Balcony" },
-              { name: "cctvStatus", label: "CCTV Installed" },
-            ].map(({ name, label }) => (
+              "airConditioned",
+              "wifi",
+              "refrigerator",
+              "housekeeping",
+              "powerBackup",
+              "bedding",
+              "lift",
+              "cctvStatus",
+              "availableStatus",
+              "attachedBathrooms",
+              "balconyStatus",
+              "drinkingWater",
+              "highSpeedWifi",
+              "hotWaterSupply",
+              "professionalHousekeeping",
+              "laundryFacilities",
+              "biometricEntry",
+              "hotMealsIncluded",
+              "security24x7",
+              "diningArea",
+            ].map((name) => (
               <div key={name} className="flex items-center">
                 <Controller
                   name={name as keyof FormData}
@@ -189,12 +294,42 @@ export default function AddRoom() {
                       {...field}
                       type="checkbox"
                       className="w-5 h-5 mr-2"
-                      checked={!!field.value} // ✅ Fixed boolean issue
+                      checked={!!field.value}
                       onChange={(e) => field.onChange(e.target.checked)}
                     />
                   )}
                 />
-                <label className="text-sm font-semibold text-gray-700">{label}</label>
+                <label className="text-sm font-semibold text-gray-700 capitalize">
+                  {name.replace(/([A-Z])/g, " $1")}
+                </label>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="text-sm font-semibold text-gray-700">
+              Food Menu (comma-separated)
+            </label>
+            {["breakfast", "lunch", "dinner"].map((meal) => (
+              <div key={meal} className="mb-2">
+                <label className="text-sm text-gray-600 capitalize">
+                  {meal}
+                </label>
+                <Controller
+                  name={`foodMenu.${meal}` as const}
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      className="w-full border border-gray-300 rounded-lg p-2"
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value.split(",").map((item) => item.trim())
+                        )
+                      }
+                    />
+                  )}
+                />
               </div>
             ))}
           </div>
@@ -202,7 +337,11 @@ export default function AddRoom() {
           {/* Submit Button */}
           <div className="flex justify-end">
             <Button type="submit" disabled={loading} className="px-6">
-              {loading ? "Submitting..." : isEditMode ? "Update Room" : "Add Room"}
+              {loading
+                ? "Submitting..."
+                : isEditMode
+                ? "Update Room"
+                : "Add Room"}
             </Button>
           </div>
         </form>

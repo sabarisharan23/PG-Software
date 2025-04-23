@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { CreateRoomDtoType, UpdateRoomDtoType,GetRoomsDtoType } from "./room.dto";
+import { CreateRoomDtoType, UpdateRoomDtoType, GetRoomsDtoType } from "./room.dto";
 
 const prisma = new PrismaClient();
 
@@ -10,12 +10,6 @@ export async function createRoom(parsedData: CreateRoomDtoType) {
         roomNumber: parsedData.roomNumber,
       },
     });
-    const noPG = await prisma.pG.findUnique({
-      where: { id: parsedData.pgId },
-    });
-    if(!noPG){
-      throw new Error("PG not found");
-    }
 
     if (existingRoom) {
       throw new Error("Room already exists");
@@ -35,7 +29,25 @@ export async function createRoom(parsedData: CreateRoomDtoType) {
         attachedBathrooms: parsedData.attachedBathrooms,
         balconyStatus: parsedData.balconyStatus,
         cctvStatus: parsedData.cctvStatus,
+        airConditioned: parsedData.airConditioned,
+        wifi: parsedData.wifi,
+        refrigerator: parsedData.refrigerator,
+        housekeeping: parsedData.housekeeping,
+        powerBackup: parsedData.powerBackup,
+        bedding: parsedData.bedding,
+        lift: parsedData.lift,
+        drinkingWater: parsedData.drinkingWater,
+        highSpeedWifi: parsedData.highSpeedWifi,
+        hotWaterSupply: parsedData.hotWaterSupply,
+        professionalHousekeeping: parsedData.professionalHousekeeping,
+        laundryFacilities: parsedData.laundryFacilities,
+        biometricEntry: parsedData.biometricEntry,
+        hotMealsIncluded: parsedData.hotMealsIncluded,
+        security24x7: parsedData.security24x7,
+        diningArea: parsedData.diningArea,
+        foodMenu: parsedData.foodMenu,
         pgId: parsedData.pgId,
+        
       },
     });
 
@@ -54,7 +66,7 @@ export async function getRooms(query: GetRoomsDtoType) {
     const whereCondition = {
       roomNumber: query.roomNumber || undefined,
       pgId: query.pgId || undefined,
-      roomName:query.roomName || undefined,
+      roomName: query.roomName || undefined,
       roomType: query.roomType || undefined,
       floor: query.floor || undefined,
       blockName: query.blockName || undefined,
@@ -65,6 +77,23 @@ export async function getRooms(query: GetRoomsDtoType) {
       attachedBathrooms: query.attachedBathrooms || undefined,
       balconyStatus: query.balconyStatus || undefined,
       cctvStatus: query.cctvStatus || undefined,
+      airConditioned: query.airConditioned || undefined,
+      wifi: query.wifi || undefined,
+      refrigerator: query.refrigerator || undefined,
+      housekeeping: query.housekeeping || undefined,
+      powerBackup: query.powerBackup || undefined,
+      bedding: query.bedding || undefined,
+      lift: query.lift || undefined,
+      drinkingWater: query.drinkingWater || undefined,
+      highSpeedWifi: query.highSpeedWifi || undefined,
+      hotWaterSupply: query.hotWaterSupply || undefined,
+      professionalHousekeeping: query.professionalHousekeeping || undefined,
+      laundryFacilities: query.laundryFacilities || undefined,
+      biometricEntry: query.biometricEntry || undefined,
+      hotMealsIncluded: query.hotMealsIncluded || undefined,
+      security24x7: query.security24x7 || undefined,
+      diningArea: query.diningArea || undefined,
+      foodMenu: query.foodMenu || undefined,
     };
 
     const rooms = await prisma.room.findMany({
@@ -98,6 +127,10 @@ export async function getRoomById(id: number) {
         tenantRequest: true,
       },
     });
+
+    if (!room) {
+      throw new Error("Room not found");
+    }
 
     return room;
   } catch (error) {
@@ -141,4 +174,3 @@ export async function deleteRoom(id: number) {
     );
   }
 }
-

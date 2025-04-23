@@ -25,10 +25,31 @@ interface Room {
   depositPrice: number;
   roomSize: number;
   availableStatus: boolean;
-  pg:{
+  attachedBathrooms: boolean;
+  balconyStatus: boolean;
+  cctvStatus: boolean;
+  airConditioned: boolean;
+  wifi: boolean;
+  refrigerator: boolean;
+  housekeeping: boolean;
+  powerBackup: boolean;
+  bedding: boolean;
+  lift: boolean;
+  drinkingWater: boolean;
+  highSpeedWifi: boolean;
+  hotWaterSupply: boolean;
+  professionalHousekeeping: boolean;
+  laundryFacilities: boolean;
+  biometricEntry: boolean;
+  hotMealsIncluded: boolean;
+  security24x7: boolean;
+  diningArea: boolean;
+  foodMenu: string | null;
+  pg: {
     pgName: string;
-  }
+  };
 }
+
 
 export default function RoomList() {
   const navigate = useNavigate();
@@ -65,32 +86,53 @@ export default function RoomList() {
       toast.error(error.response?.data?.message || "Failed to delete room.");
     }
   };
-
   const columns: Column<Room>[] = [
-    { header: "Room Number", accessor: "roomNumber" },
+    { header: "Room No.", accessor: "roomNumber" },
     { header: "Room Name", accessor: "roomName" },
-    { header: "PG", render: (row) => row.pg.pgName },
+    { header: "PG", render: (row) => row.pg?.pgName ?? "N/A" },
     { header: "Type", accessor: "roomType" },
     { header: "Floor", accessor: "floor" },
     { header: "Block", accessor: "blockName" },
-    { header: "Rent Price", accessor: "rentPrice" },
-    { header: "Deposit Price", accessor: "depositPrice" },
-    { header: "Room Size", accessor: "roomSize" },
-    // { header: "Attached Bathrooms", render: (row) => (row.attachedBathrooms ? "Yes" : "No") },
-    // { header: "Balcony", render: (row) => (row.balconyStatus ? "Yes" : "No") },
-    // { header: "CCTV Installed", render: (row) => (row.cctvStatus ? "Yes" : "No") },
-
-    { header: "Availability", render: (row) => (row.availableStatus ? "Available" : "Occupied") },
+    { header: "Rent", accessor: "rentPrice" },
+    { header: "Deposit", accessor: "depositPrice" },
+    { header: "Size", accessor: "roomSize" },
+    { header: "Available", render: (row) => (row.availableStatus ? "Yes" : "No") },
+    { header: "Attached Bath", render: (row) => (row.attachedBathrooms ? "Yes" : "No") },
+    { header: "Balcony", render: (row) => (row.balconyStatus ? "Yes" : "No") },
+    { header: "CCTV", render: (row) => (row.cctvStatus ? "Yes" : "No") },
+    { header: "AC", render: (row) => (row.airConditioned ? "Yes" : "No") },
+    { header: "Wi-Fi", render: (row) => (row.wifi ? "Yes" : "No") },
+    { header: "Refrigerator", render: (row) => (row.refrigerator ? "Yes" : "No") },
+    { header: "Housekeeping", render: (row) => (row.housekeeping ? "Yes" : "No") },
+    { header: "Power Backup", render: (row) => (row.powerBackup ? "Yes" : "No") },
+    { header: "Bedding", render: (row) => (row.bedding ? "Yes" : "No") },
+    { header: "Lift", render: (row) => (row.lift ? "Yes" : "No") },
+    { header: "Drinking Water", render: (row) => (row.drinkingWater ? "Yes" : "No") },
+    { header: "High-Speed Wi-Fi", render: (row) => (row.highSpeedWifi ? "Yes" : "No") },
+    { header: "Hot Water", render: (row) => (row.hotWaterSupply ? "Yes" : "No") },
+    { header: "Pro Housekeeping", render: (row) => (row.professionalHousekeeping ? "Yes" : "No") },
+    { header: "Laundry", render: (row) => (row.laundryFacilities ? "Yes" : "No") },
+    { header: "Biometric Entry", render: (row) => (row.biometricEntry ? "Yes" : "No") },
+    { header: "Hot Meals", render: (row) => (row.hotMealsIncluded ? "Yes" : "No") },
+    { header: "24x7 Security", render: (row) => (row.security24x7 ? "Yes" : "No") },
+    { header: "Dining Area", render: (row) => (row.diningArea ? "Yes" : "No") },
+    { header: "Food Menu", render: (row) => {
+      if (row.foodMenu && typeof row.foodMenu === 'object') {
+          return Object.entries(row.foodMenu).map(([key, value]) => `${key}: ${value}`).join(", ");
+      }
+      return row.foodMenu || "N/A";
+  } },
+    
     {
       header: "Actions",
       render: (row) => (
-        <div className="flex gap-8">
+        <div className="flex gap-4">
           <CiEdit
-            className="text-black font-bold text-2xl cursor-pointer"
+            className="text-black text-xl cursor-pointer"
             onClick={() => navigate(`/add-room/${row.id}`)}
           />
           <CiEraser
-            className="text-black text-2xl cursor-pointer"
+            className="text-black text-xl cursor-pointer"
             onClick={() => {
               setSelectedRoom(row);
               setOpen(true);
@@ -100,6 +142,7 @@ export default function RoomList() {
       ),
     },
   ];
+  
 
   return (
     <div className="flex flex-col gap-4 p-4 overflow-x-hidden">

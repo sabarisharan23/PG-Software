@@ -1,6 +1,5 @@
 import z from "zod";
 
-// Create Room DTO
 export const CreateRoomDtoSchema = z.object({
   roomNumber: z.number(),
   roomName: z.string(),
@@ -14,31 +13,29 @@ export const CreateRoomDtoSchema = z.object({
   attachedBathrooms: z.boolean(),
   balconyStatus: z.boolean(),
   cctvStatus: z.boolean(),
-  pgId: z.number(), // Relation to PG
+  airConditioned: z.boolean().default(false),
+  wifi: z.boolean().default(false),
+  refrigerator: z.boolean().default(false),
+  housekeeping: z.boolean().default(false),
+  powerBackup: z.boolean().default(false),
+  bedding: z.boolean().default(false),
+  lift: z.boolean().default(false),
+  drinkingWater: z.boolean().default(false),
+  highSpeedWifi: z.boolean().default(false),
+  hotWaterSupply: z.boolean().default(false),
+  professionalHousekeeping: z.boolean().default(false),
+  laundryFacilities: z.boolean().default(false),
+  biometricEntry: z.boolean().default(false),
+  hotMealsIncluded: z.boolean().default(false),
+  security24x7: z.boolean().default(false),
+  diningArea: z.boolean().default(false),
+  foodMenu: z.record(z.any()).optional(), // Flexible JSON
+  pgId: z.number(),
+  
 });
 
 export type CreateRoomDtoType = z.infer<typeof CreateRoomDtoSchema>;
 
-// Get Rooms DTO
-export const GetRoomsDtoSchema = z.object({
-  roomNumber: z.number().optional(),
-  pgId: z.string().transform((val) => (val ? parseInt(val, 10) : undefined)).optional(),
-  roomName: z.string().optional(),
-  roomType: z.enum(["SINGLE", "DOUBLE", "TRIPLE", "QUADRUPLE", "STANDARD", "PREMIUM"]).optional(),
-  floor: z.number().optional(),
-  blockName: z.string().optional(),
-  rentPrice: z.number().optional(),
-  depositPrice: z.number().optional(),
-  roomSize: z.number().optional(),
-  availableStatus: z.boolean().optional(),
-  attachedBathrooms: z.boolean().optional(),
-  balconyStatus: z.boolean().optional(),
-  cctvStatus: z.boolean().optional(),
-});
-
-export type GetRoomsDtoType = z.infer<typeof GetRoomsDtoSchema>;
-
-// Update Room DTO
 export const UpdateRoomDtoSchema = z.object({
   roomNumber: z.number().optional(),
   roomName: z.string().optional(),
@@ -52,6 +49,58 @@ export const UpdateRoomDtoSchema = z.object({
   attachedBathrooms: z.boolean().optional(),
   balconyStatus: z.boolean().optional(),
   cctvStatus: z.boolean().optional(),
+  airConditioned: z.boolean().optional(),
+  wifi: z.boolean().optional(),
+  refrigerator: z.boolean().optional(),
+  housekeeping: z.boolean().optional(),
+  powerBackup: z.boolean().optional(),
+  bedding: z.boolean().optional(),
+  lift: z.boolean().optional(),
+  drinkingWater: z.boolean().optional(),
+  highSpeedWifi: z.boolean().optional(),
+  hotWaterSupply: z.boolean().optional(),
+  professionalHousekeeping: z.boolean().optional(),
+  laundryFacilities: z.boolean().optional(),
+  biometricEntry: z.boolean().optional(),
+  hotMealsIncluded: z.boolean().optional(),
+  security24x7: z.boolean().optional(),
+  diningArea: z.boolean().optional(),
+  foodMenu: z.record(z.any()).optional(), // Optional JSON field
 });
 
 export type UpdateRoomDtoType = z.infer<typeof UpdateRoomDtoSchema>;
+
+export const GetRoomsDtoSchema = z.object({
+  roomNumber: z.number().optional(),
+  pgId: z.number().optional(),
+  roomName: z.string().optional(),
+  roomType: z.enum(["SINGLE", "DOUBLE", "TRIPLE", "QUADRUPLE", "STANDARD", "PREMIUM"]).optional(),
+  floor: z.number().optional(),
+  blockName: z.string().optional(),
+  rentPrice: z.number().optional(),
+  depositPrice: z.number().optional(),
+  roomSize: z.number().optional(),
+  availableStatus: z.boolean().optional(),
+  attachedBathrooms: z.boolean().optional(),
+  balconyStatus: z.boolean().optional(),
+  cctvStatus: z.boolean().optional(),
+  airConditioned: z.boolean().optional(),
+  wifi: z.boolean().optional(),
+  refrigerator: z.boolean().optional(),
+  housekeeping: z.boolean().optional(),
+  powerBackup: z.boolean().optional(),
+  bedding: z.boolean().optional(),
+  lift: z.boolean().optional(),
+  drinkingWater: z.boolean().optional(),
+  highSpeedWifi: z.boolean().optional(),
+  hotWaterSupply: z.boolean().optional(),
+  professionalHousekeeping: z.boolean().optional(),
+  laundryFacilities: z.boolean().optional(),
+  biometricEntry: z.boolean().optional(),
+  hotMealsIncluded: z.boolean().optional(),
+  security24x7: z.boolean().optional(),
+  diningArea: z.boolean().optional(),
+  foodMenu: z.record(z.any()).optional(), // Optional for filtering
+});
+
+export type GetRoomsDtoType = z.infer<typeof GetRoomsDtoSchema>;
