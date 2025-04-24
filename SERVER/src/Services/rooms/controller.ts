@@ -12,7 +12,9 @@ export async function createRoomController(
 ) {
   try {
     const body = CreateRoomDtoSchema.parse(req.body);
-    const response = await createRoom(body);
+    const files = req.files as Express.Multer.File[];
+    const response = await createRoom(body, files);
+    res.json(response);
     res.json(response);
   } catch (error) {
     next(error);
@@ -56,9 +58,9 @@ export async function updateRoomController(
   next: NextFunction
 ) {
   try {
-    const body = UpdateRoomDtoSchema.parse(req.body);
-    const response = await updateRoom(Number(req.params.id), body);
-    res.json(response);
+    const parsed = UpdateRoomDtoSchema.parse(req.body);
+    const updatedRoom = await updateRoom(Number(req.params.id), parsed, req.files as Express.Multer.File[]);
+    res.json(updatedRoom);
   } catch (error) {
     next(error);
   }

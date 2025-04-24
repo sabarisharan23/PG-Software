@@ -1,63 +1,44 @@
 import { PrismaClient } from "@prisma/client";
 import { CreateRoomDtoType, UpdateRoomDtoType, GetRoomsDtoType } from "./room.dto";
+import { v4 as uuidv4 } from "uuid";
+import { minioClient } from "../../config/minio";
 
 const prisma = new PrismaClient();
+const BUCKET_NAME = "room-images";
 
-export async function createRoom(parsedData: CreateRoomDtoType) {
+export async function createRoom(parsedData: CreateRoomDtoType, files: Express.Multer.File[]) {
   try {
     const existingRoom = await prisma.room.findUnique({
-      where: {
-        roomNumber: parsedData.roomNumber,
-      },
+      where: { roomNumber: parsedData.roomNumber },
     });
+    if (existingRoom) throw new Error("Room already exists");
 
-    if (existingRoom) {
-      throw new Error("Room already exists");
+    const urls: string[] = [];
+
+    const bucketExists = await minioClient.bucketExists(BUCKET_NAME);
+    if (!bucketExists) {
+      await minioClient.makeBucket(BUCKET_NAME, "us-east-1");
+    }
+
+    for (const file of files) {
+      const objectName = `${uuidv4()}-${file.originalname}`;
+      await minioClient.putObject(BUCKET_NAME, objectName, file.buffer);
+      urls.push(`http://localhost:9000/${BUCKET_NAME}/${objectName}`);
     }
 
     const newRoom = await prisma.room.create({
       data: {
-        roomNumber: parsedData.roomNumber,
-        roomName: parsedData.roomName,
-        roomType: parsedData.roomType,
-        floor: parsedData.floor,
-        blockName: parsedData.blockName,
-        rentPrice: parsedData.rentPrice,
-        depositPrice: parsedData.depositPrice,
-        roomSize: parsedData.roomSize,
-        availableStatus: parsedData.availableStatus,
-        attachedBathrooms: parsedData.attachedBathrooms,
-        balconyStatus: parsedData.balconyStatus,
-        cctvStatus: parsedData.cctvStatus,
-        airConditioned: parsedData.airConditioned,
-        wifi: parsedData.wifi,
-        refrigerator: parsedData.refrigerator,
-        housekeeping: parsedData.housekeeping,
-        powerBackup: parsedData.powerBackup,
-        bedding: parsedData.bedding,
-        lift: parsedData.lift,
-        drinkingWater: parsedData.drinkingWater,
-        highSpeedWifi: parsedData.highSpeedWifi,
-        hotWaterSupply: parsedData.hotWaterSupply,
-        professionalHousekeeping: parsedData.professionalHousekeeping,
-        laundryFacilities: parsedData.laundryFacilities,
-        biometricEntry: parsedData.biometricEntry,
-        hotMealsIncluded: parsedData.hotMealsIncluded,
-        security24x7: parsedData.security24x7,
-        diningArea: parsedData.diningArea,
-        foodMenu: parsedData.foodMenu,
-        pgId: parsedData.pgId,
-        
+        ...parsedData,
+        roomImages: {
+          create: urls.map((url) => ({ url })),
+        },
       },
+      include: { roomImages: true, tenantRequest: true, roomTenants: true },
     });
 
     return newRoom;
   } catch (error) {
-    throw new Error(
-      `Error creating room: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    );
+    throw new Error(`Error creating room: ${error instanceof Error ? error.message : "Unknown error"}`);
   }
 }
 
@@ -102,14 +83,14 @@ export async function getRooms(query: GetRoomsDtoType) {
         pg: true,
         roomTenants: true,
         tenantRequest: true,
+        roomImages: true
       },
     });
 
     return rooms;
   } catch (error) {
     throw new Error(
-      `Error fetching rooms: ${
-        error instanceof Error ? error.message : "Unknown error"
+      `Error fetching rooms: ${error instanceof Error ? error.message : "Unknown error"
       }`
     );
   }
@@ -125,6 +106,7 @@ export async function getRoomById(id: number) {
         pg: true,
         roomTenants: true,
         tenantRequest: true,
+        roomImages: true
       },
     });
 
@@ -135,25 +117,64 @@ export async function getRoomById(id: number) {
     return room;
   } catch (error) {
     throw new Error(
-      `Error fetching room by ID: ${
-        error instanceof Error ? error.message : "Unknown error"
+      `Error fetching room by ID: ${error instanceof Error ? error.message : "Unknown error"
       }`
     );
   }
 }
 
-export async function updateRoom(id: number, parsedData: UpdateRoomDtoType) {
-  const existingRoom = await prisma.room.findUnique({ where: { id } });
+export async function updateRoom(id: number, parsedData: UpdateRoomDtoType, files?: Express.Multer.File[]) {
+  const existingRoom = await prisma.room.findUnique({
+    where: { id },
+    include: { roomImages: true },
+  });
+
   if (!existingRoom) {
     throw new Error("Room not found");
   }
 
-  const updateRoom = await prisma.room.update({
+  // 🧼 1. Delete old images from MinIO and DB
+  if (files && existingRoom.roomImages.length > 0) {
+    for (const image of existingRoom.roomImages) {
+      const objectName = image.url.split("/").pop(); // extract filename from URL
+      if (objectName) {
+        await minioClient.removeObject(BUCKET_NAME, objectName);
+      }
+    }
+
+    await prisma.roomImages.deleteMany({
+      where: { roomId: id },
+    });
+  }
+
+  // 📥 2. Upload new images (if provided)
+  const urls: string[] = [];
+
+  if (files && files.length > 0) {
+    for (const file of files) {
+      const objectName = `${uuidv4()}-${file.originalname}`;
+      await minioClient.putObject(BUCKET_NAME, objectName, file.buffer);
+      urls.push(`http://localhost:9000/${BUCKET_NAME}/${objectName}`);
+    }
+  }
+
+  // 🛠 3. Update room and attach new image URLs
+  const updatedRoom = await prisma.room.update({
     where: { id },
-    data: parsedData,
+    data: {
+      ...parsedData,
+      roomImages: files?.length
+        ? {
+          create: urls.map((url) => ({ url })),
+        }
+        : undefined,
+    },
+    include: {
+      roomImages: true,
+    },
   });
 
-  return updateRoom;
+  return updatedRoom;
 }
 
 export async function deleteRoom(id: number) {
@@ -168,8 +189,7 @@ export async function deleteRoom(id: number) {
     return { success: true, message: "Room deleted successfully" };
   } catch (error) {
     throw new Error(
-      `Error deleting room: ${
-        error instanceof Error ? error.message : "Unknown error"
+      `Error deleting room: ${error instanceof Error ? error.message : "Unknown error"
       }`
     );
   }

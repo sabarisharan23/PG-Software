@@ -105,8 +105,15 @@ model Room {
   pg            PG              @relation(fields: [pgId], references: [id])
   roomTenants   RoomTenant[]
   tenantRequest TenantRequest[]
+  roomImages    RoomImages[]
 }
 
+model RoomImages{
+  id          Int      @id @default(autoincrement())
+  url         String
+  roomId      Int      @map("room_id")
+  room        Room     @relation(fields: [roomId], references: [id])
+}
 model RoomTenant {
   userId Int  @map("user_id")
   roomId Int  @map("room_id")
